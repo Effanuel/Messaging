@@ -43,8 +43,6 @@ const Home = React.memo(() => {
     setMessage(value);
   }, []);
 
-  console.log(firestoreMessages, loggedInUserId);
-
   return (
     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
       {isLoggedIn && (

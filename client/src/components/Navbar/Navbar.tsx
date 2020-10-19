@@ -6,6 +6,7 @@ import {SignedInLinks} from './SignedInLinks';
 import {SignedOutLinks} from './SignedOutLinks';
 import {NavbarLogo} from './NavbarLogo';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
+import {LinearProgress} from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   root: {flexGrow: 1, marginBottom: 10},
@@ -15,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
 function Navbar() {
   const classes = useStyles();
 
-  const {isLoggedIn} = useReduxSelector('isLoggedIn');
+  const {isLoggedIn, authLoading} = useReduxSelector('isLoggedIn', 'authLoading');
 
   return (
     <div className={classes.root}>
@@ -25,6 +26,7 @@ function Navbar() {
           {isLoggedIn ? <SignedInLinks /> : <SignedOutLinks />}
         </Toolbar>
       </AppBar>
+      {authLoading ? <LinearProgress /> : <div style={{height: 5}}></div>}
     </div>
   );
 }

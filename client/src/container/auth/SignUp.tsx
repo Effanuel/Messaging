@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, LinearProgress, makeStyles, Typography} from '@material-ui/core';
+import {Button, makeStyles, Typography} from '@material-ui/core';
 import {Formik, Form} from 'formik';
 import {InputField} from '../../components';
 import {useDispatch} from 'react-redux';
@@ -7,6 +7,8 @@ import {signUpUser} from 'redux/modules/auth/authModule';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
 import {buildFormValidator, Values} from 'common/form-validations';
 import {Redirect} from 'react-router-dom';
+
+const formValidator = buildFormValidator(['email', 'password']);
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -21,17 +23,11 @@ const useStyles = makeStyles((theme) => ({
   inputLabel: {color: 'grey'},
 }));
 
-const formValidator = buildFormValidator(['email', 'password']);
-
 function SignUp() {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const {authLoading, authError, authSignedUpSuccessfully} = useReduxSelector(
-    'authLoading',
-    'authError',
-    'authSignedUpSuccessfully',
-  );
+  const {authError, authSignedUpSuccessfully} = useReduxSelector('authError', 'authSignedUpSuccessfully');
 
   const validate = React.useCallback((values: Values) => formValidator(values), []);
 
@@ -60,7 +56,6 @@ function SignUp() {
           <Typography variant="h4" className={classes.label} color="primary">
             Sign up
           </Typography>
-          {authLoading && <LinearProgress />}
 
           <InputField name="username" label="Username" />
           <InputField name="email" label="Email" />
