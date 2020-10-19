@@ -25,10 +25,11 @@ interface MessageCardProps {
   type: 'input' | 'card';
   onActionClick?: (e: any) => void;
   onTextChange?: (e: any) => void;
+  value?: string;
 }
 
 export default function MessageCard(props: MessageCardProps) {
-  const {username, createdAt, type, text, onActionClick, onTextChange} = props;
+  const {username, createdAt, type, text, onActionClick, onTextChange, value} = props;
   const classes = useStyles();
 
   const renderAction = React.useMemo(() => {
@@ -63,6 +64,7 @@ export default function MessageCard(props: MessageCardProps) {
             className={classes.input}
             inputProps={{className: classes.input}}
             onChange={onTextChange}
+            value={value}
           />
         ) : (
           <Typography className={classes.white} variant="body2" color="textSecondary" component="p">

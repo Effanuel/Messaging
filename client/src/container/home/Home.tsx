@@ -27,6 +27,7 @@ const Home = React.memo(() => {
 
   const postMessage = React.useCallback(() => {
     dispatch(createMessage({text: message, username: profile.username, userId: loggedInUserId}));
+    setMessage('');
   }, [dispatch, message, profile, loggedInUserId]);
 
   const renderCard = React.useCallback(
@@ -42,6 +43,8 @@ const Home = React.memo(() => {
     setMessage(value);
   }, []);
 
+  console.log(firestoreMessages, loggedInUserId);
+
   return (
     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
       {isLoggedIn && (
@@ -51,13 +54,14 @@ const Home = React.memo(() => {
           username={profile.username}
           createdAt={''}
           type="input"
+          value={message}
         />
       )}
       {!_.isNil(firestoreMessages) && Object.keys(firestoreMessages).map(renderCard)}
       {firestoreMessages === null && loggedInUserId !== undefined && (
         <div style={{color: 'white'}}>You haven't posted any messages</div>
       )}
-      {firestoreMessages === null && loggedInUserId === undefined && (
+      {(firestoreMessages === null || firestoreMessages?.length == 0) && loggedInUserId === undefined && (
         <div style={{color: 'white'}}>Log in to post messages</div>
       )}
     </div>
