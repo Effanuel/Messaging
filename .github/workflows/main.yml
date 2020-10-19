@@ -40,10 +40,6 @@ jobs:
         run: npm run lint
         working-directory: client
 
-      - name: Run tsc
-        run: npm run tsc
-        working-directory: client
-
       - name: Run unit tests
         run: npm run unit
         working-directory: client
