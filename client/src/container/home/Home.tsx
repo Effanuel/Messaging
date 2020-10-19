@@ -1,11 +1,11 @@
 import React from 'react';
+import moment from 'moment';
 import _ from 'lodash';
 import {useDispatch} from 'react-redux';
 import {useFirestoreConnect} from 'react-redux-firebase';
 import MessageCard from 'components/MessageCard/MessageCard';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
 import {createMessage} from 'redux/modules/message/messageModule';
-import moment from 'moment';
 
 const Home = React.memo(() => {
   const dispatch = useDispatch();
@@ -32,7 +32,6 @@ const Home = React.memo(() => {
   const renderCard = React.useCallback(
     (messageId) => {
       const {username, text, createdAt} = firestoreMessages[messageId];
-      console.log('SECONDS', new Date(1602781798).toISOString(), firestoreMessages[messageId]);
       const date = moment(createdAt?.seconds * 1000).fromNow();
       return <MessageCard key={messageId} username={username} createdAt={date} type="card" text={text} />;
     },
