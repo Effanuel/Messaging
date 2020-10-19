@@ -30,6 +30,8 @@ export function createThunk<P, Returned = any>(
 const errorHandler: any = {
   'auth/user-not-found': 'Email or password is incorrect.',
   'auth/wrong-password': 'Email or password is incorrect.',
+  'auth/invalid-email': 'Email is invalid.',
   'auth/email-already-in-use': 'Email already in use.',
   'auth/weak-password': 'Password should be atleast 6 characters.',
+  'auth/network-request-failed': 'Network error.',
 };
