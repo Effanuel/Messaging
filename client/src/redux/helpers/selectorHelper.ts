@@ -35,7 +35,7 @@ const buildSelectors = (state: AppState): Selectors => {
     profile: firebase.profile,
     loggedInUserId: firebase.auth.uid,
 
-    firestoreMessages: firestore?.data?.messages,
+    firestoreMessages: firestore?.ordered?.messages,
 
     authLoading: auth.loading,
     authError: auth.error,

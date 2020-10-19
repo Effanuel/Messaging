@@ -4,7 +4,6 @@ import {Navbar} from './components';
 import SignIn from 'container/auth/SignIn';
 import SignUp from 'container/auth/SignUp';
 import Home from 'container/home/Home';
-import './App.css';
 
 const App = React.memo(() => {
   return (
