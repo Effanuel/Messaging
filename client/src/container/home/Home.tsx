@@ -57,7 +57,7 @@ const Home = React.memo(() => {
       )}
       {!_.isNil(firestoreMessages) && Object.keys(firestoreMessages).map(renderCard)}
       {firestoreMessages === null && loggedInUserId !== undefined && (
-        <div style={{color: 'white'}}>You haven't posted any messages</div>
+        <div style={{color: 'white'}}>You haven`t posted any messages</div>
       )}
       {(firestoreMessages === null || firestoreMessages?.length == 0) && loggedInUserId === undefined && (
         <div style={{color: 'white'}}>Log in to post messages</div>

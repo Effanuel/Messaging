@@ -1,4 +1,3 @@
-import {AsyncThunk} from '@reduxjs/toolkit';
 import React from 'react';
 import {Thunk} from 'redux/models/state';
 
