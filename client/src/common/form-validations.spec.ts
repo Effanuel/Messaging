@@ -23,9 +23,9 @@ describe('buildFormValidator', () => {
     const formValidator = buildFormValidator(allInputs);
 
     expect(formValidator({password: ''} as Values).password).toEqual('Password is required.');
-    expect(formValidator({password: ','} as Values).password).toEqual('Password has to be atleast 8 characters long.');
+    expect(formValidator({password: ','} as Values).password).toEqual('Password has to be atleast 6 characters long.');
     expect(formValidator({password: '12345'} as Values).password).toEqual(
-      'Password has to be atleast 8 characters long.',
+      'Password has to be atleast 6 characters long.',
     );
     expect(formValidator({password: '123456'} as Values).password).toEqual(undefined);
   });
