@@ -18,7 +18,7 @@ function createStore(preloadedState: Partial<AppState> = {}) {
     reducer: rootReducer,
     middleware: getDefaultMiddleware({
       thunk: {extraArgument: getFirebase},
-      serializableCheck: false, // {ignoredActionPaths: ['payload', 'auth', 'firestore']},
+      serializableCheck: false,
     }).concat([]),
     preloadedState,
   });

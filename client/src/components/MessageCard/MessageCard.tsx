@@ -16,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
   input: {border: 'none', display: 'flex', color: 'rgba(255, 255, 255, 0.6)'},
   cardContent: {padding: 25},
   postButton: {display: 'flex', justifyContent: 'flex-end'},
+  disabledButton: {backgroundColor: 'grey'},
 }));
 
 interface MessageCardProps {
@@ -24,7 +25,7 @@ interface MessageCardProps {
   createdAt: string;
   type: 'input' | 'card';
   onActionClick?: (e: any) => void;
-  onTextChange?: (e: any) => void;
+  onTextChange?: (e: InputChange) => void;
   value?: string;
 }
 
@@ -32,20 +33,30 @@ export default function MessageCard(props: MessageCardProps) {
   const {username, createdAt, type, text, onActionClick, onTextChange, value} = props;
   const classes = useStyles();
 
-  const renderAction = React.useMemo(() => {
-    return type === 'input' ? (
-      <Button variant="outlined" color="primary" onClick={onActionClick}>
-        Post
-      </Button>
-    ) : null;
-  }, [type, onActionClick]);
+  const inputLimitReacted = React.useMemo(() => (value?.length ?? 0) > 150, [value]);
+
+  const renderAction = React.useMemo(
+    () =>
+      type === 'input' && (
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={onActionClick}
+          disabled={!value || inputLimitReacted}
+          classes={{disabled: classes.disabledButton}}
+        >
+          Post
+        </Button>
+      ),
+    [type, onActionClick, value, classes.disabledButton, inputLimitReacted],
+  );
 
   return (
     <Card className={classes.root}>
       <CardHeader
         avatar={
           <Avatar aria-label="recipe" className={classes.avatar}>
-            {username?.[0]}
+            {username?.[0] ?? 'T'}
           </Avatar>
         }
         action={renderAction}
@@ -65,6 +76,8 @@ export default function MessageCard(props: MessageCardProps) {
             inputProps={{className: classes.input}}
             onChange={onTextChange}
             value={value}
+            error={inputLimitReacted}
+            label={inputLimitReacted && 'Input exceeds the limit of 150 characters.'}
           />
         ) : (
           <Typography className={classes.white} variant="body2" color="textSecondary" component="p">

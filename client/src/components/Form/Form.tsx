@@ -21,7 +21,7 @@ interface FormProps {
   headerTitle: string;
   submitCta: string;
   onSubmit: (values: Values) => void;
-  children: any;
+  children: React.ReactNode;
   inputValues: Partial<Values>;
 }
 

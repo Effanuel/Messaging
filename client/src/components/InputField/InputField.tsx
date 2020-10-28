@@ -25,7 +25,7 @@ function InputField(props: InputFieldProps) {
 
   const {inputLabel, underline} = useStyles();
 
-  const [field, meta] = useField<any>(props as any);
+  const [field, meta] = useField(props);
   const errorText = meta.error && meta.touched ? meta.error : '';
 
   return (

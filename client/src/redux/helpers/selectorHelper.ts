@@ -1,9 +1,6 @@
 import {useSelector, shallowEqual} from 'react-redux';
-
 import {AppState} from 'redux/models/state';
 import {userLoggedInSelector} from 'redux/selectors';
-
-// type States = UnionToIntersection<ValueOf<AppState>>;
 
 interface Selectors {
   isLoggedIn: ReturnType<typeof userLoggedInSelector>;

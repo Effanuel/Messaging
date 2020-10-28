@@ -21,7 +21,11 @@ const theme = createMuiTheme({
 
 function AuthIsLoaded({children}: any) {
   const auth = useSelector((state: AppState) => state.firebase.auth);
-  return !isLoaded(auth) ? <div style={{color: 'white'}}>Loading Screen...</div> : children;
+  return !isLoaded(auth) ? (
+    <div style={{display: 'flex', color: 'white', justifyContent: 'center'}}>Loading Screen...</div>
+  ) : (
+    children
+  );
 }
 
 ReactDOM.render(
