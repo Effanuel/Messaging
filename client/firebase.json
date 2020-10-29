@@ -1,0 +1,9 @@
+{
+  "functions": {
+    "predeploy": "npm --prefix run build"
+  },
+  "hosting": {
+    "public": "build",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+  }
+}
