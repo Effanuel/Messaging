@@ -2,7 +2,7 @@ import React from 'react';
 import {useDispatch} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 import {InputField, Form} from '../../components';
-import {signUpUser} from 'redux/modules/auth/authModule';
+import {clearAuthState, signUpUser} from 'redux/modules/auth/authModule';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
 import {Values} from 'common/form-validations';
 
@@ -10,6 +10,10 @@ function SignUp() {
   const dispatch = useDispatch();
 
   const {authSignedUpSuccessfully} = useReduxSelector('authSignedUpSuccessfully');
+
+  React.useEffect(() => {
+    dispatch(clearAuthState());
+  }, [dispatch]);
 
   const signUp = React.useCallback(
     (values: Values) => {
