@@ -34,4 +34,5 @@ const errorHandler: {[key: string]: string} = {
   'auth/weak-password': 'Password should be atleast 6 characters.',
   'auth/network-request-failed': 'Network error.',
   'auth/too-many-requests': 'Too many failed attempts.',
+  'auth/username-exists': 'Username is already in use.',
 };

@@ -2,7 +2,7 @@ import React from 'react';
 import {Redirect} from 'react-router-dom';
 import {useDispatch} from 'react-redux';
 import {InputField, Form} from '../../components';
-import {signInUser} from 'redux/modules/auth/authModule';
+import {clearAuthState, signInUser} from 'redux/modules/auth/authModule';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
 import {Values} from 'common/form-validations';
 
@@ -10,6 +10,10 @@ function SignIn() {
   const dispatch = useDispatch();
 
   const {isLoggedIn} = useReduxSelector('isLoggedIn');
+
+  React.useEffect(() => {
+    dispatch(clearAuthState());
+  }, [dispatch]);
 
   const signIn = React.useCallback(
     (values: Values) => {
