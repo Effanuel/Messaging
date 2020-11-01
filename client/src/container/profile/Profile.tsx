@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import React from 'react';
 import {useFirestoreConnect} from 'react-redux-firebase';
-import {CardList} from 'components/CardList/CardList';
+import {CardList} from 'components';
 import {RouteComponentProps} from 'react-router-dom';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
 

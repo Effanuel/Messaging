@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
-import MessageCard from 'components/MessageCard/MessageCard';
 import _ from 'lodash';
+import {MessageCard} from 'components';
 
 interface Props {
   firestoreMessages: any;

@@ -2,10 +2,9 @@ import React from 'react';
 import _ from 'lodash';
 import {useDispatch} from 'react-redux';
 import {useFirestoreConnect} from 'react-redux-firebase';
-import MessageCard from 'components/MessageCard/MessageCard';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
 import {createMessage} from 'redux/modules/message/messageModule';
-import {CardList} from 'components';
+import {CardList, MessageCard} from 'components';
 
 const Home = React.memo(() => {
   const dispatch = useDispatch();

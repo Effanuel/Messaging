@@ -1,7 +1,7 @@
 import React from 'react';
 import {useDispatch} from 'react-redux';
 import {Redirect} from 'react-router-dom';
-import {InputField, Form} from '../../components';
+import {InputField, Form} from 'components';
 import {clearAuthState, signUpUser} from 'redux/modules/auth/authModule';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
 import {Values} from 'common/form-validations';

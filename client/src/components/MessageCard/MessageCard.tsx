@@ -28,7 +28,7 @@ interface MessageCardProps {
   value?: string;
 }
 
-export default React.memo((props: MessageCardProps) => {
+export const MessageCard = React.memo((props: MessageCardProps) => {
   const {username, createdAt, type, text, onActionClick, onTextChange, value} = props;
   const classes = useStyles();
 
