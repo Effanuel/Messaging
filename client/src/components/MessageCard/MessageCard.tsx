@@ -1,6 +1,5 @@
 import React from 'react';
 import {makeStyles} from '@material-ui/core/styles';
-import {red} from '@material-ui/core/colors';
 import {Button, TextField, Typography, Card, CardHeader, CardContent, Avatar} from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
@@ -12,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
     color: 'rgba(255, 255, 255, 0.6)',
   },
   white: {color: 'rgba(255, 255, 255, 0.6)'},
-  avatar: {backgroundColor: red[500]},
+  avatar: {backgroundColor: theme.palette.primary.main},
   input: {border: 'none', display: 'flex', color: 'rgba(255, 255, 255, 0.6)'},
   cardContent: {padding: 25},
   postButton: {display: 'flex', justifyContent: 'flex-end'},
@@ -29,7 +28,7 @@ interface MessageCardProps {
   value?: string;
 }
 
-export default function MessageCard(props: MessageCardProps) {
+export default React.memo((props: MessageCardProps) => {
   const {username, createdAt, type, text, onActionClick, onTextChange, value} = props;
   const classes = useStyles();
 
@@ -87,4 +86,4 @@ export default function MessageCard(props: MessageCardProps) {
       </CardContent>
     </Card>
   );
-}
+});

@@ -11,6 +11,8 @@ import {LinearProgress} from '@material-ui/core';
 const useStyles = makeStyles((theme) => ({
   root: {flexGrow: 1, marginBottom: 10},
   title: {flexGrow: 1},
+  appBar: {display: 'flex', flex: 1, backgroundColor: theme.palette.success.main, height: '5px'},
+  emptyLoader: {height: 5},
 }));
 
 function Navbar() {
@@ -26,7 +28,9 @@ function Navbar() {
           {isLoggedIn ? <SignedInLinks /> : <SignedOutLinks />}
         </Toolbar>
       </AppBar>
-      {authLoading ? <LinearProgress /> : <div style={{height: 5}}></div>}
+      <div className={classes.appBar}></div>
+
+      {authLoading ? <LinearProgress /> : <div className={classes.emptyLoader}></div>}
     </div>
   );
 }

@@ -4,7 +4,7 @@ import MessageIcon from '@material-ui/icons/Mms';
 import {Link} from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
-  title: {flexGrow: 1},
+  title: {flexGrow: 1, textShadow: '1px 1px black'},
 }));
 
 function NavbarLogo() {
