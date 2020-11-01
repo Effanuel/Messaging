@@ -1,11 +1,11 @@
 import React from 'react';
-import moment from 'moment';
 import _ from 'lodash';
 import {useDispatch} from 'react-redux';
 import {useFirestoreConnect} from 'react-redux-firebase';
 import MessageCard from 'components/MessageCard/MessageCard';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
 import {createMessage} from 'redux/modules/message/messageModule';
+import {CardList} from 'components';
 
 const Home = React.memo(() => {
   const dispatch = useDispatch();
@@ -30,15 +30,6 @@ const Home = React.memo(() => {
     setMessage('');
   }, [dispatch, message, profile, loggedInUserId]);
 
-  const renderCard = React.useCallback(
-    (messageId) => {
-      const {username, text, createdAt} = firestoreMessages[messageId];
-      const date = moment(createdAt?.seconds * 1000).fromNow();
-      return <MessageCard key={messageId} username={username} createdAt={date} type="card" text={text} />;
-    },
-    [firestoreMessages],
-  );
-
   const handleTextChange = React.useCallback(({target: {value}}: any) => {
     setMessage(value);
   }, []);
@@ -55,7 +46,7 @@ const Home = React.memo(() => {
           value={message}
         />
       )}
-      {!_.isNil(firestoreMessages) && Object.keys(firestoreMessages).map(renderCard)}
+      <CardList firestoreMessages={firestoreMessages} />
       {firestoreMessages === null && loggedInUserId !== undefined && (
         <div style={{color: 'white'}}>You haven`t posted any messages</div>
       )}
