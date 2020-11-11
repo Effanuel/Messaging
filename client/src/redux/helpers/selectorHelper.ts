@@ -11,6 +11,7 @@ interface Selectors {
   loggedInUserId: string;
 
   firestoreMessages: any;
+  firestoreUsers: any;
 
   authLoading: boolean;
   authError: string;
@@ -33,6 +34,7 @@ const buildSelectors = (state: AppState): Selectors => {
     loggedInUserId: firebase.auth.uid,
 
     firestoreMessages: firestore?.ordered?.messages,
+    firestoreUsers: firestore?.data.users,
 
     authLoading: auth.loading,
     authError: auth.error,
