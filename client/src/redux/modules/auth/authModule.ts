@@ -1,16 +1,22 @@
 import {createAction, createReducer} from '@reduxjs/toolkit';
+import {ExtendedFirestoreInstance} from 'react-redux-firebase';
 import {createThunk} from 'redux/helpers/thunks';
 import {AuthState, CLEAR_AUTH_STATE, SIGN_IN, SIGN_OUT, SIGN_UP} from './types';
+
+async function throwIfUsernameExists(firestore: () => ExtendedFirestoreInstance, username: string) {
+  const snapshot = await firestore().collection('users').where('username', '==', username).get();
+  const usernameExists = Boolean(snapshot.docs.map((doc) => doc.data())?.length);
+  if (usernameExists) {
+    throw {code: 'auth/username-exists'};
+  }
+}
 
 type SignUpUserPayload = {username: string; email: string; password: string};
 export const signUpUser = createThunk<SignUpUserPayload>(SIGN_UP, async (payload, firebase) => {
   const {username, email, password} = payload;
   const {auth, firestore} = firebase();
-  const snapshot = await firestore().collection('users').where('username', '==', payload.username).get();
-  const resp = snapshot.docs.map((doc) => doc.data());
-  if (resp.length) {
-    throw {code: 'auth/username-exists'};
-  }
+
+  throwIfUsernameExists(firestore, payload.username);
 
   const authResponse = await auth().createUserWithEmailAndPassword(email, password);
   await auth().signOut();
