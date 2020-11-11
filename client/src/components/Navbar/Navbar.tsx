@@ -5,6 +5,7 @@ import {SignedInLinks} from './SignedInLinks';
 import {SignedOutLinks} from './SignedOutLinks';
 import {NavbarLogo} from './NavbarLogo';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
+import {SearchBar} from 'components';
 
 const useStyles = makeStyles((theme) => ({
   root: {flexGrow: 1, marginBottom: 10},
@@ -23,6 +24,7 @@ function Navbar() {
       <AppBar position="static" color="primary">
         <Toolbar>
           <NavbarLogo />
+          <SearchBar />
           {isLoggedIn ? <SignedInLinks /> : <SignedOutLinks />}
         </Toolbar>
       </AppBar>

@@ -5,9 +5,7 @@ import {CardList} from 'components';
 import {RouteComponentProps} from 'react-router-dom';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
 
-interface Props extends RouteComponentProps<{id: string}> {
-  a: string;
-}
+type Props = RouteComponentProps<{id: string}>;
 
 function Profile({match}: Props) {
   const {firestoreMessages} = useReduxSelector('firestoreMessages');
@@ -18,7 +16,15 @@ function Profile({match}: Props) {
     orderBy: ['createdAt', 'desc'],
   });
 
-  return <CardList firestoreMessages={firestoreMessages} />;
+  return (
+    <div style={{display: 'flex', alignItems: 'center', flexDirection: 'column'}}>
+      {firestoreMessages?.length ? (
+        <CardList firestoreMessages={firestoreMessages} />
+      ) : (
+        <div style={{color: 'white'}}>This user doesn`t have any messages posted.</div>
+      )}
+    </div>
+  );
 }
 
 export default Profile;
