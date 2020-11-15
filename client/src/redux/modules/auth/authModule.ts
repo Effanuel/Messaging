@@ -16,7 +16,7 @@ export const signUpUser = createThunk<SignUpUserPayload>(SIGN_UP, async (payload
   const {username, email, password} = payload;
   const {auth, firestore} = firebase();
 
-  throwIfUsernameExists(firestore, payload.username);
+  await throwIfUsernameExists(firestore, payload.username);
 
   const authResponse = await auth().createUserWithEmailAndPassword(email, password);
   await auth().signOut();
