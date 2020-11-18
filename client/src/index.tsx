@@ -17,6 +17,7 @@ const theme = createMuiTheme({
     secondary: {main: '#1e1e1e'},
     error: {main: '#cf6679'},
     success: {main: '#004c40'},
+    action: {disabled: '#838383', disabledBackground: '#CCCCCC'},
   },
 });
 

@@ -1,97 +1,103 @@
-import _ from 'lodash';
 import React from 'react';
-import Autosuggest from 'react-autosuggest';
+import {useHistory, useParams, useLocation} from 'react-router-dom';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import {CircularProgress, TextField} from '@material-ui/core';
 import {useFirestoreConnect} from 'react-redux-firebase';
-import {useHistory} from 'react-router-dom';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
-import './SearchBar.css';
 
-interface Suggestion {
+interface Option {
   id: string;
   name: string;
 }
 
-const getSuggestionValue = ({name}: Suggestion) => name;
-
-const initialState = {value: '', suggestions: []};
-
-function SearchBar() {
+export const SearchBar = React.memo(() => {
   const history = useHistory();
+  const location = useLocation();
 
-  const [state, setState] = React.useState(initialState);
+  const params = useParams();
+  const [value, setValue] = React.useState('');
 
-  const {firestoreUsers} = useReduxSelector('firestoreUsers');
+  const {firestoreUsers, firestoreLoading} = useReduxSelector('firestoreUsers', 'firestoreLoading');
 
-  const getSuggestions = React.useCallback(
-    (value: string) => {
-      const inputLength = value.trim().toLowerCase().length;
-
-      return inputLength !== 0 && Object.keys(firestoreUsers)?.length
-        ? Object.keys(firestoreUsers)?.map((userId: string) => ({
-            id: userId,
-            name: firestoreUsers[userId]?.username,
-          }))
-        : [];
-    },
-    [firestoreUsers],
-  );
-
-  const renderSuggestion = React.useCallback(
-    ({id, name}: Suggestion) => {
-      const onClick = () => {
-        history.push(`/user/${id}`);
-      };
-
-      return <div onClick={onClick}>{name}</div>;
-    },
-    [history],
-  );
-
-  // eslint-disable-next-line
-  const debouncedSearchTerm = React.useMemo(
-    _.throttle(() => state.value, 250),
-    [state.value],
-  );
+  React.useEffect(() => {
+    setValue('');
+  }, [params]);
 
   useFirestoreConnect({
     collection: 'users',
     where: [
-      ['username', '>=', debouncedSearchTerm],
-      ['username', '<', debouncedSearchTerm + 'z'],
+      ['username', '>=', value],
+      ['username', '<', value + 'z'],
     ],
     limit: 5,
   });
 
-  const onChange = React.useCallback((event: any, {newValue}: any) => {
-    setState((prevState) => ({...prevState, value: newValue}));
+  const onInputChange = React.useCallback((event: any, value: string) => {
+    setValue(value ?? '');
   }, []);
 
-  const onSuggestionsFetchRequested = React.useCallback(
-    ({value}: {value: string}) => {
-      setState((prevState) => ({...prevState, suggestions: getSuggestions(value) as any}));
-    },
-    [getSuggestions],
+  const getOptionSelected = React.useCallback((option: Option, value: Option) => option.id === value.id, []);
+
+  const getOptionLabel = React.useCallback((option: Option) => option?.name, []);
+
+  const options: Option[] = React.useMemo(() => {
+    return !!firestoreUsers && Object.keys(firestoreUsers).length
+      ? Object.keys(firestoreUsers)?.map((userId: string) => ({
+          id: userId,
+          name: firestoreUsers[userId]?.username,
+        }))
+      : [];
+  }, [firestoreUsers]);
+
+  const renderInput = React.useCallback(
+    (params) => (
+      <TextField
+        {...params}
+        label="Search for users..."
+        value={value}
+        InputLabelProps={{style: {color: 'white'}}}
+        InputProps={{
+          ...params.InputProps,
+          style: {color: 'white'},
+          endAdornment: (
+            <>
+              {firestoreLoading ? <CircularProgress color="inherit" size={10} /> : null}
+              {params.InputProps.endAdornment}
+            </>
+          ),
+        }}
+      />
+    ),
+    [firestoreLoading, value],
   );
 
-  const onSuggestionsClearRequested = React.useCallback(() => {
-    setState(initialState);
-  }, []);
-
-  const inputProps = React.useMemo(() => ({placeholder: 'Search users...', value: state.value, onChange}), [
-    onChange,
-    state.value,
-  ]);
+  const renderOption = React.useCallback(
+    ({name, id}: Option) => {
+      const redirectToProfile = () => {
+        const currentProfileId = location.pathname.split('/')?.[2];
+        if (currentProfileId !== id) {
+          history.push(`/user/${id}`);
+        }
+        setValue('');
+      };
+      return <div onClick={redirectToProfile}>{name}</div>;
+    },
+    [history, location],
+  );
 
   return (
-    <Autosuggest
-      suggestions={state.suggestions}
-      onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-      onSuggestionsClearRequested={onSuggestionsClearRequested}
-      getSuggestionValue={getSuggestionValue}
-      renderSuggestion={renderSuggestion}
-      inputProps={inputProps}
+    <Autocomplete
+      id="asynchronous-demo"
+      noOptionsText="No users found."
+      style={{width: 200, height: 30, justifyContent: 'center', display: 'flex', alignItems: 'center'}}
+      onInputChange={onInputChange}
+      getOptionSelected={getOptionSelected}
+      getOptionLabel={getOptionLabel}
+      renderOption={renderOption}
+      options={options}
+      loading={firestoreLoading}
+      renderInput={renderInput}
+      inputValue={value}
     />
   );
-}
-
-export {SearchBar};
+});
