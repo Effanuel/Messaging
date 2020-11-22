@@ -1,9 +1,17 @@
 import {useSelector, shallowEqual} from 'react-redux';
 import {AppState} from 'redux/models/state';
-import {userLoggedInSelector} from 'redux/selectors';
+import {isNextPageDisabledSelector, userLoggedInSelector} from 'redux/selectors';
+
+interface FirestoreUsers {
+  [userId: string]: {
+    email: string;
+    username: string;
+  };
+}
 
 interface Selectors {
   isLoggedIn: ReturnType<typeof userLoggedInSelector>;
+  isNextPageDisabled: ReturnType<typeof isNextPageDisabledSelector>;
   authUid: string;
   authDisplayName: string | null;
   firebaseInitializing: boolean;
@@ -11,7 +19,8 @@ interface Selectors {
   loggedInUserId: string;
 
   firestoreMessages: any;
-  firestoreUsers: any;
+  firestoreUsers: FirestoreUsers | undefined;
+  firestoreLoading: boolean;
 
   authLoading: boolean;
   authError: string;
@@ -19,6 +28,8 @@ interface Selectors {
 
   messageLoading: boolean;
   messageError: string;
+  messages: AppState['message']['messages'];
+  currentPage: number;
 
   state: any;
 }
@@ -27,6 +38,7 @@ const buildSelectors = (state: AppState): Selectors => {
   const {firebase, auth, message, firestore} = state;
   return {
     isLoggedIn: userLoggedInSelector(state),
+    isNextPageDisabled: isNextPageDisabledSelector(state),
     authUid: firebase.auth.uid,
     authDisplayName: firebase.auth.displayName,
     firebaseInitializing: firebase.isInitializing,
@@ -35,6 +47,7 @@ const buildSelectors = (state: AppState): Selectors => {
 
     firestoreMessages: firestore?.ordered?.messages,
     firestoreUsers: firestore?.data.users,
+    firestoreLoading: Boolean(Object.values(firestore?.status?.requesting)?.[0]),
 
     authLoading: auth.loading,
     authError: auth.error,
@@ -42,6 +55,8 @@ const buildSelectors = (state: AppState): Selectors => {
 
     messageLoading: message.loading,
     messageError: message.error,
+    messages: message.messages,
+    currentPage: message.currentPage,
 
     state: firebase,
   };

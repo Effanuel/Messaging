@@ -3,7 +3,7 @@ import {makeStyles, MenuItem} from '@material-ui/core';
 import {NavLink} from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
-  textShadow: {textShadow: '1px 1px black'},
+  textShadow: {textShadow: '1px 1px black', padding: 0},
 }));
 
 function SignedOutLinks() {

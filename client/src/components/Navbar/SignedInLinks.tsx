@@ -6,7 +6,7 @@ import {useReduxSelector} from 'redux/helpers/selectorHelper';
 import {signOutUser} from 'redux/modules/auth/authModule';
 
 const useStyles = makeStyles((theme) => ({
-  textShadow: {textShadow: '1px 1px black'},
+  textShadow: {textShadow: '1px 1px black', padding: 0},
 }));
 
 function SignedInLinks() {

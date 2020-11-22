@@ -2,7 +2,7 @@ import {AsyncThunk, createAsyncThunk} from '@reduxjs/toolkit';
 import {ExtendedFirebaseInstance} from 'react-redux-firebase';
 import {AppState} from 'redux/models/state';
 
-interface ThunkApiConfig {
+export interface ThunkApiConfig {
   rejected: string;
   extra: () => ExtendedFirebaseInstance;
   rejectValue: string;
