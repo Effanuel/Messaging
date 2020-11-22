@@ -1,12 +1,17 @@
 import _ from 'lodash';
 import React from 'react';
-import {CardListContainer} from 'components';
+import {CardListContainer, Header} from 'components';
 import {RouteComponentProps} from 'react-router-dom';
 
 type Props = RouteComponentProps<{id: string}>;
 
 function Profile({match}: Props) {
-  return <CardListContainer userId={match.params.id ?? ''} />;
+  return (
+    <>
+      <Header label="PROFILE" />
+      <CardListContainer userId={match.params.id ?? ''} />
+    </>
+  );
 }
 
 export default Profile;

@@ -57,8 +57,8 @@ export const SearchBar = React.memo(() => {
         value={value}
         InputLabelProps={{style: {color: 'white'}}}
         InputProps={{
-          ...params.InputProps,
-          style: {color: 'white'},
+          ...params.InputProps, //'#00796b' '#02b89b'
+          style: {color: 'white', borderRadius: '5px', border: '1px solid #056c60'},
           endAdornment: (
             <>
               {firestoreLoading ? <CircularProgress color="inherit" size={10} /> : null}
@@ -87,9 +87,8 @@ export const SearchBar = React.memo(() => {
 
   return (
     <Autocomplete
-      id="asynchronous-demo"
+      id="autocomplete"
       noOptionsText="No users found."
-      style={{width: 200, height: 30, justifyContent: 'center', display: 'flex', alignItems: 'center'}}
       onInputChange={onInputChange}
       getOptionSelected={getOptionSelected}
       getOptionLabel={getOptionLabel}

@@ -2,6 +2,8 @@ import {createAsyncThunk, createReducer} from '@reduxjs/toolkit';
 import {createThunk, ThunkApiConfig} from 'redux/helpers/thunks';
 import {CREATE_MESSAGE, GET_MESSAGES, MessageState} from './types';
 
+export const PAGE_LIMIT = 5;
+
 interface CreateMessageProps {
   text: string;
   username: string;
@@ -22,7 +24,6 @@ interface GetMessagesProps {
 export const getMessages = createAsyncThunk<any, GetMessagesProps, ThunkApiConfig>(
   GET_MESSAGES,
   async ({type, userId}, {rejectWithValue, extra: firebase, getState}) => {
-    const PAGE_LIMIT = 2;
     const {messages} = getState().message;
 
     try {

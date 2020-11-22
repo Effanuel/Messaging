@@ -4,9 +4,20 @@ import {useDispatch} from 'react-redux';
 import {useFirestoreConnect} from 'react-redux-firebase';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
 import {createMessage} from 'redux/modules/message/messageModule';
-import {CardList, MessageCard} from 'components';
+import {CardList, Header, MessageCard} from 'components';
+import {makeStyles} from '@material-ui/core';
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
+}));
 
 const Home = React.memo(() => {
+  const classes = useStyles();
   const dispatch = useDispatch();
 
   const [message, setMessage] = React.useState('');
@@ -34,25 +45,28 @@ const Home = React.memo(() => {
   }, []);
 
   return (
-    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
-      {isLoggedIn && (
-        <MessageCard
-          onTextChange={handleTextChange}
-          onActionClick={postMessage}
-          username={profile.username}
-          createdAt={''}
-          type="input"
-          value={message}
-        />
-      )}
-      <CardList firestoreMessages={firestoreMessages} />
-      {firestoreMessages === null && loggedInUserId !== undefined && (
-        <div style={{color: 'white'}}>You haven`t posted any messages</div>
-      )}
-      {(firestoreMessages === null || firestoreMessages?.length == 0) && loggedInUserId === undefined && (
-        <div style={{color: 'white'}}>Log in to post messages</div>
-      )}
-    </div>
+    <>
+      <Header label="HOME" />
+      <div className={classes.root}>
+        {isLoggedIn && (
+          <MessageCard
+            onTextChange={handleTextChange}
+            onActionClick={postMessage}
+            username={profile.username}
+            createdAt={''}
+            type="input"
+            value={message}
+          />
+        )}
+        <CardList firestoreMessages={firestoreMessages} />
+        {firestoreMessages === null && loggedInUserId !== undefined && (
+          <div style={{color: 'white'}}>You haven`t posted any messages</div>
+        )}
+        {(firestoreMessages === null || firestoreMessages?.length == 0) && loggedInUserId === undefined && (
+          <div style={{color: 'white', marginTop: 20}}>Log in to post messages</div>
+        )}
+      </div>
+    </>
   );
 });
 
