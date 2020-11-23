@@ -9,7 +9,7 @@ function Content() {
   return (
     <Switch>
       <Route exact path="/" component={Home} />
-      <Route path="/user/:id" component={Profile} />
+      <Route path="/user/:name/:id" component={Profile} />
       <Route path="/signin" component={SignIn} />
       <Route path="/signup" component={SignUp} />
     </Switch>

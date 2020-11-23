@@ -43,7 +43,7 @@ const Home = React.memo(() => {
 
   return (
     <>
-      <Header label="HOME" />
+      <Header name="HOME" />
       <div className={classes.root}>
         {isLoggedIn && (
           <InputCard

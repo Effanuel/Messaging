@@ -1,14 +1,19 @@
 import {createAsyncThunk, createReducer} from '@reduxjs/toolkit';
 import {createThunk, ThunkApiConfig} from 'redux/helpers/thunks';
-import {CREATE_MESSAGE, GET_MESSAGES, LIKE_MESSAGE, MessageState, UNLIKE_MESSAGE} from './types';
+import {
+  CREATE_MESSAGE,
+  FOLLOW_USER,
+  GET_MESSAGES,
+  GET_PROFILE,
+  LIKE_MESSAGE,
+  MessageState,
+  UNFOLLOW_USER,
+  UNLIKE_MESSAGE,
+} from './types';
 
 export const PAGE_LIMIT = 6;
 
-interface LikeMessageProps {
-  postId: string;
-  userId: string;
-}
-
+type LikeMessageProps = {postId: string; userId: string};
 export const likeMessage = createThunk<LikeMessageProps>(LIKE_MESSAGE, async (payload, firebase) => {
   const {postId, userId} = payload;
   const like = {userId, postId};
@@ -16,11 +21,7 @@ export const likeMessage = createThunk<LikeMessageProps>(LIKE_MESSAGE, async (pa
   return postId;
 });
 
-interface UnlikeMessageProps {
-  postId: string;
-  userId: string;
-}
-
+type UnlikeMessageProps = {postId: string; userId: string};
 export const unlikeMessage = createThunk<UnlikeMessageProps>(UNLIKE_MESSAGE, async (payload, firebase) => {
   const {postId, userId} = payload;
   const snapshot = await firebase()
@@ -34,23 +35,44 @@ export const unlikeMessage = createThunk<UnlikeMessageProps>(UNLIKE_MESSAGE, asy
   return postId;
 });
 
-interface CreateMessageProps {
-  text: string;
-  username: string;
-  userId: string;
-}
-
+type CreateMessageProps = {text: string; username: string; userId: string};
 export const createMessage = createThunk<CreateMessageProps>(CREATE_MESSAGE, async (payload, firebase) => {
   const message = {...payload, createdAt: new Date()};
   const {id} = await firebase().firestore().collection('messages').add(message);
   return {...message, id, isLiked: false};
 });
 
-interface GetMessagesProps {
-  type: 'initial' | 'forward' | 'backward';
-  userId: string;
-}
+type FollowUserProps = {userId: string; followerId: string};
+export const followUser = createThunk<FollowUserProps>(FOLLOW_USER, async (payload, firebase) => {
+  const follow = {...payload};
+  await firebase().firestore().collection('follows').add(follow);
+  return {isFollowing: true};
+});
 
+type UnfollowUserProps = {userId: string; followerId: string};
+export const unfollowUser = createThunk<UnfollowUserProps>(UNFOLLOW_USER, async (payload, firebase) => {
+  const snapshot = await firebase()
+    .firestore()
+    .collection('follows')
+    .where('userId', '==', payload.userId)
+    .where('followerId', '==', payload.followerId)
+    .get();
+  snapshot.docs[0].ref.delete();
+  return {isFollowing: false};
+});
+
+type GetProfileProps = {userId: string; followerId: string};
+export const getProfile = createThunk<GetProfileProps>(GET_PROFILE, async (payload, firebase) => {
+  const snapshot = await firebase()
+    .firestore()
+    .collection('follows')
+    .where('userId', '==', payload.userId)
+    .where('followerId', '==', payload.followerId)
+    .get();
+  return {isFollowing: !snapshot.empty};
+});
+
+type GetMessagesProps = {type: 'initial' | 'forward' | 'backward'; userId: string};
 export const getMessages = createAsyncThunk<any, GetMessagesProps, ThunkApiConfig>(
   GET_MESSAGES,
   async ({type, userId}, {rejectWithValue, extra: firebase, getState}) => {
@@ -112,6 +134,7 @@ export const getMessages = createAsyncThunk<any, GetMessagesProps, ThunkApiConfi
 const defaultState = {
   userId: '',
   messages: [],
+  profile: {isFollowing: false},
   loading: false,
   currentPage: 0,
   error: '',
@@ -161,5 +184,14 @@ export const messageReducer = createReducer<MessageState>(defaultState, (builder
       ];
 
       return {...state, loading: true, error: '', messages: updatedMessages};
+    })
+    .addCase(getProfile.fulfilled, (state, {payload}) => {
+      return {...state, profile: payload};
+    })
+    .addCase(followUser.fulfilled, (state, {payload}) => {
+      return {...state, profile: payload};
+    })
+    .addCase(unfollowUser.fulfilled, (state, {payload}) => {
+      return {...state, profile: payload};
     }),
 );

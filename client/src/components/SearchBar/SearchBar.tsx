@@ -76,7 +76,7 @@ export const SearchBar = React.memo(() => {
       const redirectToProfile = () => {
         const currentProfileId = location.pathname.split('/')?.[2];
         if (currentProfileId !== id) {
-          history.push(`/user/${id}`);
+          history.push(`/user/${name}/${id}`);
         }
         setValue('');
       };

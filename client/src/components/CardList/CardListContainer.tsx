@@ -3,7 +3,7 @@ import React from 'react';
 import {CardList} from 'components';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
 import {useDispatch} from 'react-redux';
-import {getMessages} from 'redux/modules/message/messageModule';
+import {getMessages, getProfile} from 'redux/modules/message/messageModule';
 import {Button, ButtonGroup} from '@material-ui/core';
 
 function CardListContainer({userId, emptyCta}: {userId: string; emptyCta: string}) {
@@ -17,7 +17,8 @@ function CardListContainer({userId, emptyCta}: {userId: string; emptyCta: string
 
   React.useEffect(() => {
     dispatch(getMessages({type: 'initial', userId: userId ?? ''}));
-  }, [dispatch, userId]);
+    dispatch(getProfile({userId: loggedInUserId, followerId: userId}));
+  }, [dispatch, userId, loggedInUserId]);
 
   const nextPage = React.useCallback(() => {
     dispatch(getMessages({type: 'forward', userId: userId ?? ''}));
