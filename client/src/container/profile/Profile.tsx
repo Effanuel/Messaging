@@ -9,7 +9,7 @@ function Profile({match}: Props) {
   return (
     <>
       <Header label="PROFILE" />
-      <CardListContainer userId={match.params.id ?? ''} />
+      <CardListContainer userId={match.params.id ?? ''} emptyCta="This user doesn`t have any messages posted." />
     </>
   );
 }

@@ -4,7 +4,7 @@ import {useDispatch} from 'react-redux';
 import {useFirestoreConnect} from 'react-redux-firebase';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
 import {createMessage} from 'redux/modules/message/messageModule';
-import {CardList, Header, MessageCard} from 'components';
+import {CardListContainer, Header, InputCard} from 'components';
 import {makeStyles} from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
@@ -22,12 +22,7 @@ const Home = React.memo(() => {
 
   const [message, setMessage] = React.useState('');
 
-  const {firestoreMessages, profile, loggedInUserId, isLoggedIn} = useReduxSelector(
-    'firestoreMessages',
-    'profile',
-    'loggedInUserId',
-    'isLoggedIn',
-  );
+  const {profile, loggedInUserId, isLoggedIn} = useReduxSelector('profile', 'loggedInUserId', 'isLoggedIn');
 
   useFirestoreConnect({
     collection: 'messages',
@@ -44,27 +39,21 @@ const Home = React.memo(() => {
     setMessage(value);
   }, []);
 
+  const label = loggedInUserId === undefined ? 'Log in to post messages' : 'You haven`t posted any messages';
+
   return (
     <>
       <Header label="HOME" />
       <div className={classes.root}>
         {isLoggedIn && (
-          <MessageCard
+          <InputCard
             onTextChange={handleTextChange}
             onActionClick={postMessage}
             username={profile.username}
-            createdAt={''}
-            type="input"
             value={message}
           />
         )}
-        <CardList firestoreMessages={firestoreMessages} />
-        {firestoreMessages === null && loggedInUserId !== undefined && (
-          <div style={{color: 'white'}}>You haven`t posted any messages</div>
-        )}
-        {(firestoreMessages === null || firestoreMessages?.length == 0) && loggedInUserId === undefined && (
-          <div style={{color: 'white', marginTop: 20}}>Log in to post messages</div>
-        )}
+        <CardListContainer userId={loggedInUserId ?? ''} emptyCta={label} />
       </div>
     </>
   );

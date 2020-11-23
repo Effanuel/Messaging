@@ -6,9 +6,14 @@ import {useDispatch} from 'react-redux';
 import {getMessages} from 'redux/modules/message/messageModule';
 import {Button, ButtonGroup} from '@material-ui/core';
 
-function CardListContainer({userId}: {userId: string}) {
+function CardListContainer({userId, emptyCta}: {userId: string; emptyCta: string}) {
   const dispatch = useDispatch();
-  const {messages, isNextPageDisabled, currentPage} = useReduxSelector('messages', 'isNextPageDisabled', 'currentPage');
+  const {messages, isNextPageDisabled, currentPage, loggedInUserId} = useReduxSelector(
+    'messages',
+    'isNextPageDisabled',
+    'currentPage',
+    'loggedInUserId',
+  );
 
   React.useEffect(() => {
     dispatch(getMessages({type: 'initial', userId: userId ?? ''}));
@@ -24,20 +29,21 @@ function CardListContainer({userId}: {userId: string}) {
 
   return (
     <div style={{display: 'flex', alignItems: 'center', flexDirection: 'column'}}>
-      {messages?.length ? (
-        <CardList firestoreMessages={messages} />
+      {messages?.length && userId !== '' ? (
+        <CardList firestoreMessages={messages} loggedInUserId={loggedInUserId} />
       ) : (
-        <div style={{color: 'white'}}>This user doesn`t have any messages posted.</div>
+        <div style={{color: 'white', paddingTop: 20, paddingBottom: 20}}>{emptyCta} </div>
       )}
-
-      <ButtonGroup variant="contained" color="primary">
-        <Button disabled={currentPage === 0} onClick={prevPage}>
-          Previous
-        </Button>
-        <Button disabled={isNextPageDisabled} onClick={nextPage}>
-          Next
-        </Button>
-      </ButtonGroup>
+      {messages?.length && userId !== '' ? (
+        <ButtonGroup variant="contained" color="primary">
+          <Button disabled={currentPage === 0} onClick={prevPage}>
+            Previous
+          </Button>
+          <Button disabled={isNextPageDisabled} onClick={nextPage}>
+            Next
+          </Button>
+        </ButtonGroup>
+      ) : null}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 export * from './InputField/InputField';
-export * from './MessageCard/MessageCard';
+export * from './Card/MessageCard';
+export * from './Card/InputCard';
 export * from './Form/Form';
 export * from './CardList/CardList';
 export * from './CardList/CardListContainer';

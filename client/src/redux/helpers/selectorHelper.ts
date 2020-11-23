@@ -1,5 +1,6 @@
 import {useSelector, shallowEqual} from 'react-redux';
 import {AppState} from 'redux/models/state';
+import {Message} from 'redux/modules/message/types';
 import {isNextPageDisabledSelector, userLoggedInSelector} from 'redux/selectors';
 
 interface FirestoreUsers {
@@ -18,7 +19,7 @@ interface Selectors {
   profile: any;
   loggedInUserId: string;
 
-  firestoreMessages: any;
+  firestoreMessages: Message[];
   firestoreUsers: FirestoreUsers | undefined;
   firestoreLoading: boolean;
 
@@ -55,7 +56,7 @@ const buildSelectors = (state: AppState): Selectors => {
 
     messageLoading: message.loading,
     messageError: message.error,
-    messages: message.messages,
+    messages: message.messages.slice(0, 5),
     currentPage: message.currentPage,
 
     state: firebase,
