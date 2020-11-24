@@ -3,10 +3,20 @@ import React from 'react';
 import {CardList} from 'components';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
 import {useDispatch} from 'react-redux';
-import {getMessages, getProfile} from 'redux/modules/message/messageModule';
+import {getProfile} from 'redux/modules/message/messageModule';
 import {Button, ButtonGroup} from '@material-ui/core';
+import {AsyncThunkAction} from '@reduxjs/toolkit';
+import {ThunkApiConfig} from 'redux/helpers/thunks';
 
-function CardListContainer({userId, emptyCta}: {userId: string; emptyCta: string}) {
+function CardListContainer<T>({
+  userId,
+  emptyCta,
+  loadMessagesAction,
+}: {
+  userId: string;
+  emptyCta: string;
+  loadMessagesAction: (args: {type: any; userId: string}) => AsyncThunkAction<any, T, ThunkApiConfig>;
+}) {
   const dispatch = useDispatch();
   const {messages, isNextPageDisabled, currentPage, loggedInUserId} = useReduxSelector(
     'messages',
@@ -16,17 +26,17 @@ function CardListContainer({userId, emptyCta}: {userId: string; emptyCta: string
   );
 
   React.useEffect(() => {
-    dispatch(getMessages({type: 'initial', userId: userId ?? ''}));
-    dispatch(getProfile({userId, followerId: loggedInUserId}));
-  }, [dispatch, userId, loggedInUserId]);
+    dispatch(loadMessagesAction({type: 'initial', userId: userId ?? ''}));
+    dispatch(getProfile({userId}));
+  }, [dispatch, userId, loadMessagesAction]);
 
   const nextPage = React.useCallback(() => {
-    dispatch(getMessages({type: 'forward', userId: userId ?? ''}));
-  }, [dispatch, userId]);
+    dispatch(loadMessagesAction({type: 'forward', userId: userId ?? ''}));
+  }, [dispatch, userId, loadMessagesAction]);
 
   const prevPage = React.useCallback(() => {
-    dispatch(getMessages({type: 'backward', userId: userId ?? ''}));
-  }, [dispatch, userId]);
+    dispatch(loadMessagesAction({type: 'backward', userId: userId ?? ''}));
+  }, [dispatch, userId, loadMessagesAction]);
 
   return (
     <div style={{display: 'flex', alignItems: 'center', flexDirection: 'column'}}>

@@ -3,7 +3,7 @@ import _ from 'lodash';
 import {useDispatch} from 'react-redux';
 import {useFirestoreConnect} from 'react-redux-firebase';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
-import {createMessage} from 'redux/modules/message/messageModule';
+import {createMessage, getFollowedUsersMessages} from 'redux/modules/message/messageModule';
 import {CardListContainer, Header, InputCard} from 'components';
 import {makeStyles} from '@material-ui/core';
 
@@ -53,7 +53,11 @@ const Home = React.memo(() => {
             value={message}
           />
         )}
-        <CardListContainer userId={loggedInUserId ?? ''} emptyCta={label} />
+        <CardListContainer
+          loadMessagesAction={getFollowedUsersMessages}
+          userId={loggedInUserId ?? ''}
+          emptyCta={label}
+        />
       </div>
     </>
   );

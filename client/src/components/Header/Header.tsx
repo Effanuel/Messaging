@@ -27,15 +27,15 @@ function Header({name, label, userId}: Props) {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const {loggedInUserId, follProfile} = useReduxSelector('loggedInUserId', 'follProfile');
+  const {follProfile} = useReduxSelector('follProfile');
 
   const followUserAction = React.useCallback(() => {
-    dispatch(followUser({followerId: loggedInUserId, userId: userId ?? ''}));
-  }, [dispatch, loggedInUserId, userId]);
+    dispatch(followUser({userId: userId ?? ''}));
+  }, [dispatch, userId]);
 
   const unfollowUserAction = React.useCallback(() => {
-    dispatch(unfollowUser({followerId: loggedInUserId, userId: userId ?? ''}));
-  }, [dispatch, loggedInUserId, userId]);
+    dispatch(unfollowUser({userId: userId ?? ''}));
+  }, [dispatch, userId]);
 
   return (
     <div className={classes.header}>
