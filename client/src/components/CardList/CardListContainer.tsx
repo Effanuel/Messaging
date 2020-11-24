@@ -17,7 +17,7 @@ function CardListContainer({userId, emptyCta}: {userId: string; emptyCta: string
 
   React.useEffect(() => {
     dispatch(getMessages({type: 'initial', userId: userId ?? ''}));
-    dispatch(getProfile({userId: loggedInUserId, followerId: userId}));
+    dispatch(getProfile({userId, followerId: loggedInUserId}));
   }, [dispatch, userId, loggedInUserId]);
 
   const nextPage = React.useCallback(() => {

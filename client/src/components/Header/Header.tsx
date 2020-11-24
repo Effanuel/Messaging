@@ -20,22 +20,22 @@ const useStyles = makeStyles((theme) => ({
 interface Props {
   name: string;
   label?: string;
-  followerId?: string;
+  userId?: string;
 }
 
-function Header({name, label, followerId}: Props) {
+function Header({name, label, userId}: Props) {
   const classes = useStyles();
   const dispatch = useDispatch();
 
   const {loggedInUserId, follProfile} = useReduxSelector('loggedInUserId', 'follProfile');
 
   const followUserAction = React.useCallback(() => {
-    dispatch(followUser({followerId: followerId ?? '', userId: loggedInUserId}));
-  }, [dispatch, loggedInUserId, followerId]);
+    dispatch(followUser({followerId: loggedInUserId, userId: userId ?? ''}));
+  }, [dispatch, loggedInUserId, userId]);
 
   const unfollowUserAction = React.useCallback(() => {
-    dispatch(unfollowUser({followerId: followerId ?? '', userId: loggedInUserId}));
-  }, [dispatch, loggedInUserId, followerId]);
+    dispatch(unfollowUser({followerId: loggedInUserId, userId: userId ?? ''}));
+  }, [dispatch, loggedInUserId, userId]);
 
   return (
     <div className={classes.header}>

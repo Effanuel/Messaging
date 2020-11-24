@@ -78,7 +78,7 @@ export const getMessages = createAsyncThunk<any, GetMessagesProps, ThunkApiConfi
   async ({type, userId}, {rejectWithValue, extra: firebase, getState}) => {
     const likesRef = firebase().firestore().collection('likes');
 
-    const getLikedPosts = async (messageIds: string[]): Promise<string[]> => {
+    const getLikedPostsIds = async (messageIds: string[]): Promise<string[]> => {
       const snapshot = await likesRef.where('postId', 'in', messageIds).get();
       return snapshot.docs?.map((doc) => doc.data().postId ?? []);
     };
@@ -87,7 +87,7 @@ export const getMessages = createAsyncThunk<any, GetMessagesProps, ThunkApiConfi
       const messagesData = messagesSnapshot.docs?.map((doc: any) => ({...doc.data(), id: doc.id})) ?? [];
       const messageIds = messagesData.map((message: any) => message.id);
 
-      const likes = await getLikedPosts(messageIds);
+      const likes = await getLikedPostsIds(messageIds);
       return messagesData.map((message: any) => ({...message, isLiked: likes.includes(message.id)}));
     };
 

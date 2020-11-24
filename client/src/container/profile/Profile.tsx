@@ -8,7 +8,7 @@ type Props = RouteComponentProps<{id: string; name: string}>;
 function Profile({match}: Props) {
   return (
     <>
-      <Header name="PROFILE" label={match.params.name} followerId={match.params.id ?? ''} />
+      <Header name="PROFILE" label={match.params.name} userId={match.params.id ?? ''} />
       <CardListContainer userId={match.params.id ?? ''} emptyCta="This user doesn`t have any messages posted." />
     </>
   );
