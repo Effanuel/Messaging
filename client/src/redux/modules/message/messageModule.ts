@@ -13,7 +13,7 @@ import {
   UNLIKE_MESSAGE,
 } from './types';
 
-export const PAGE_LIMIT = 6;
+export const PAGE_LIMIT = 5;
 
 export const clearMessages = createAction(CLEAR_MESSAGES);
 
@@ -40,7 +40,7 @@ type CreateMessageProps = {text: string; username: string; userId: string};
 export const createMessage = createThunk<CreateMessageProps>(CREATE_MESSAGE, async (payload, firebase) => {
   const message = {...payload, createdAt: new Date()};
   const {id} = await firebase().firestore().collection('messages').add(message);
-  return {...message, id, likes: 0};
+  return {...message, createdAt: {seconds: new Date().getTime() / 1000}, id, likes: 0};
 });
 
 export const followUser = createThunk<{userId: string}>(FOLLOW_USER, async ({userId}, firebase, getState) => {

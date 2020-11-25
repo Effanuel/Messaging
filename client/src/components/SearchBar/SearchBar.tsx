@@ -1,9 +1,13 @@
 import React from 'react';
 import {useHistory, useParams, useLocation} from 'react-router-dom';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import {CircularProgress, TextField} from '@material-ui/core';
+import {CircularProgress, makeStyles, TextField} from '@material-ui/core';
 import {useFirestoreConnect} from 'react-redux-firebase';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
+
+const useStyles = makeStyles((theme) => ({
+  clearIndicator: {color: 'white'},
+}));
 
 interface Option {
   id: string;
@@ -11,13 +15,18 @@ interface Option {
 }
 
 export const SearchBar = React.memo(() => {
+  const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
   const params = useParams();
 
   const [value, setValue] = React.useState('');
 
-  const {firestoreUsers, firestoreLoading} = useReduxSelector('firestoreUsers', 'firestoreLoading');
+  const {firestoreUsers, firestoreLoading, loggedInUserId} = useReduxSelector(
+    'firestoreUsers',
+    'firestoreLoading',
+    'loggedInUserId',
+  );
 
   React.useEffect(() => {
     setValue('');
@@ -42,12 +51,14 @@ export const SearchBar = React.memo(() => {
 
   const options: Option[] = React.useMemo(() => {
     return !!firestoreUsers && Object.keys(firestoreUsers).length
-      ? Object.keys(firestoreUsers)?.map((userId) => ({
-          id: userId,
-          name: firestoreUsers[userId]?.username,
-        }))
+      ? Object.keys(firestoreUsers)
+          ?.map((userId) => ({
+            id: userId,
+            name: firestoreUsers[userId]?.username,
+          }))
+          .filter((user) => user.id !== loggedInUserId)
       : [];
-  }, [firestoreUsers]);
+  }, [firestoreUsers, loggedInUserId]);
 
   const renderInput = React.useCallback(
     (params) => (
@@ -55,10 +66,10 @@ export const SearchBar = React.memo(() => {
         {...params}
         label="Search for users..."
         value={value}
-        InputLabelProps={{style: {color: 'white'}}}
+        InputLabelProps={{style: {color: 'white', paddingLeft: 10}}}
         InputProps={{
           ...params.InputProps, //'#00796b' '#02b89b'
-          style: {color: 'white', borderRadius: '5px', border: '1px solid #056c60'},
+          style: {color: 'white', borderRadius: '5px', border: '1px solid #056c60', paddingLeft: 10},
           endAdornment: (
             <>
               {firestoreLoading ? <CircularProgress color="inherit" size={10} /> : null}
@@ -75,12 +86,16 @@ export const SearchBar = React.memo(() => {
     ({name, id}: Option) => {
       const redirectToProfile = () => {
         const currentProfileId = location.pathname.split('/')?.[2];
+        setValue('');
         if (currentProfileId !== id) {
           history.push(`/user/${name}/${id}`);
         }
-        setValue('');
       };
-      return <div onClick={redirectToProfile}>{name}</div>;
+      return (
+        <div style={{width: '100%'}} onClick={redirectToProfile}>
+          {name}
+        </div>
+      );
     },
     [history, location],
   );
@@ -97,6 +112,7 @@ export const SearchBar = React.memo(() => {
       loading={firestoreLoading}
       renderInput={renderInput}
       inputValue={value}
+      classes={{clearIndicator: classes.clearIndicator}}
     />
   );
 });
