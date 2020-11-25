@@ -44,21 +44,20 @@ export const createMessage = createThunk<CreateMessageProps>(CREATE_MESSAGE, asy
 });
 
 export const followUser = createThunk<{userId: string}>(FOLLOW_USER, async ({userId}, firebase, getState) => {
-  await firebase().firestore().collection('follows').add({userId, followerId: getState().firebase.auth.uid});
-  await firebase().firestore().collection('users').doc(userId).update({followerCount: atomicIncrement});
-  return {isFollowing: true};
+  const firestore = firebase().firestore();
+  await firestore.collection('follows').add({userId, followerId: getState().firebase.auth.uid});
+  await firestore.collection('users').doc(userId).update({followerCount: atomicIncrement});
 });
 
 export const unfollowUser = createThunk<{userId: string}>(UNFOLLOW_USER, async ({userId}, firebase, getState) => {
-  const snapshot = await firebase()
-    .firestore()
+  const firestore = firebase().firestore();
+  const snapshot = await firestore
     .collection('follows')
     .where('userId', '==', userId)
     .where('followerId', '==', getState().firebase.auth.uid)
     .get();
   snapshot.docs[0].ref.delete();
-  await firebase().firestore().collection('users').doc(userId).update({followerCount: atomicDecrement});
-  return {isFollowing: false};
+  await firestore.collection('users').doc(userId).update({followerCount: atomicDecrement});
 });
 
 export const getProfile = createThunk<{userId: string}>(GET_PROFILE, async ({userId}, firebase, getState) => {
@@ -89,7 +88,7 @@ export const getMessages = createAsyncThunk<any, GetMessagesProps, ThunkApiConfi
         .where('postId', 'in', messageIds)
         .where('userId', '==', getState().firebase.auth.uid)
         .get();
-      return snapshot.docs?.map((doc) => doc.data().postId ?? []);
+      return snapshot.docs?.map((doc) => doc.data().postId ?? '');
     };
 
     const gatherMessages = async (messagesSnapshot: any) => {
@@ -221,11 +220,14 @@ export const messageReducer = createReducer<MessageState>(defaultState, (builder
     .addCase(getProfile.fulfilled, (state, {payload}) => {
       return {...state, profile: payload};
     })
-    .addCase(followUser.fulfilled, (state, {payload}) => {
-      return {...state, profile: {...state.profile, ...payload, followerCount: state.profile.followerCount + 1}};
+    .addCase(followUser.fulfilled, (state) => {
+      return {...state, profile: {...state.profile, isFollowing: true, followerCount: state.profile.followerCount + 1}};
     })
-    .addCase(unfollowUser.fulfilled, (state, {payload}) => {
-      return {...state, profile: {...state.profile, ...payload, followerCount: state.profile.followerCount - 1}};
+    .addCase(unfollowUser.fulfilled, (state) => {
+      return {
+        ...state,
+        profile: {...state.profile, isFollowing: false, followerCount: state.profile.followerCount - 1},
+      };
     })
     .addCase(clearMessages, (state) => {
       return {...state, messages: []};

@@ -1,10 +1,10 @@
-import _ from 'lodash';
 import React from 'react';
+import {useDispatch} from 'react-redux';
+import {Button, ButtonGroup} from '@material-ui/core';
+import _ from 'lodash';
 import {CardList} from 'components';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
-import {useDispatch} from 'react-redux';
 import {getMessages, getProfile} from 'redux/modules/message/messageModule';
-import {Button, ButtonGroup} from '@material-ui/core';
 
 interface Props {
   userId: string | undefined;
@@ -23,17 +23,21 @@ function CardListContainer({userId, emptyCta, query}: Props) {
 
   React.useEffect(() => {
     if (userId) {
-      dispatch(getMessages({type: 'initial', userId: userId ?? '', query}));
+      dispatch(getMessages({type: 'initial', userId, query}));
       dispatch(getProfile({userId}));
     }
-  }, [dispatch, userId, query, loggedInUserId]);
+  }, [dispatch, userId, query]);
 
   const nextPage = React.useCallback(() => {
-    dispatch(getMessages({type: 'forward', userId: userId ?? '', query}));
+    if (userId) {
+      dispatch(getMessages({type: 'forward', userId, query}));
+    }
   }, [dispatch, userId, query]);
 
   const prevPage = React.useCallback(() => {
-    dispatch(getMessages({type: 'backward', userId: userId ?? '', query}));
+    if (userId) {
+      dispatch(getMessages({type: 'backward', userId, query}));
+    }
   }, [dispatch, userId, query]);
 
   return (
@@ -41,7 +45,7 @@ function CardListContainer({userId, emptyCta, query}: Props) {
       {messages?.length && userId !== undefined ? (
         <CardList firestoreMessages={messages} loggedInUserId={loggedInUserId} />
       ) : (
-        <div style={{color: 'white', paddingTop: 20, paddingBottom: 20}}>{emptyCta} </div>
+        <div style={{color: 'white', paddingTop: 20, paddingBottom: 20}}>{emptyCta}</div>
       )}
       {messages?.length && userId !== undefined ? (
         <ButtonGroup variant="contained" color="primary">

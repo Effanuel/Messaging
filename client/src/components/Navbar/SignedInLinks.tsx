@@ -22,7 +22,6 @@ function SignedInLinks() {
   return (
     <>
       {profile.username && <div className={classes.textShadow}>{'Logged in as ' + profile.username}</div>}
-
       <MenuItem onClick={signOut} component={NavLink} to="/signin" color="inherit" className={classes.textShadow}>
         Sign Out
       </MenuItem>

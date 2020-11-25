@@ -32,7 +32,7 @@ interface Selectors {
   messageError: string;
   messages: AppState['message']['messages'];
   currentPage: number;
-  follProfile: Profile;
+  userProfile: Profile;
 
   state: any;
 }
@@ -60,7 +60,7 @@ const buildSelectors = (state: AppState): Selectors => {
     messageError: message.error,
     messages: message.messages.slice(0, 5),
     currentPage: message.currentPage,
-    follProfile: message.profile,
+    userProfile: message.profile,
 
     state: firebase,
   };

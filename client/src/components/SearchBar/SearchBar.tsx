@@ -13,8 +13,8 @@ interface Option {
 export const SearchBar = React.memo(() => {
   const history = useHistory();
   const location = useLocation();
-
   const params = useParams();
+
   const [value, setValue] = React.useState('');
 
   const {firestoreUsers, firestoreLoading} = useReduxSelector('firestoreUsers', 'firestoreLoading');
@@ -42,7 +42,7 @@ export const SearchBar = React.memo(() => {
 
   const options: Option[] = React.useMemo(() => {
     return !!firestoreUsers && Object.keys(firestoreUsers).length
-      ? Object.keys(firestoreUsers)?.map((userId: string) => ({
+      ? Object.keys(firestoreUsers)?.map((userId) => ({
           id: userId,
           name: firestoreUsers[userId]?.username,
         }))

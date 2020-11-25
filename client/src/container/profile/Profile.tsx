@@ -11,21 +11,21 @@ function Profile({match}: RouteComponentProps<{id: string; name: string}>) {
   const {name, id} = match.params;
   const dispatch = useDispatch();
 
-  const {follProfile, isLoggedIn} = useReduxSelector('follProfile', 'isLoggedIn');
+  const {userProfile, isLoggedIn} = useReduxSelector('userProfile', 'isLoggedIn');
 
   const followUserAction = React.useCallback(() => {
-    dispatch(followUser({userId: id ?? ''}));
+    dispatch(followUser({userId: id}));
   }, [dispatch, id]);
 
   const unfollowUserAction = React.useCallback(() => {
-    dispatch(unfollowUser({userId: id ?? ''}));
+    dispatch(unfollowUser({userId: id}));
   }, [dispatch, id]);
 
   return (
     <>
       <Header name="PROFILE" label={name}>
         <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-          {!isLoggedIn ? null : follProfile.isFollowing ? (
+          {!isLoggedIn ? null : userProfile.isFollowing ? (
             <Button variant="contained" color="primary" size="small" onClick={unfollowUserAction}>
               Unfollow
             </Button>
@@ -34,7 +34,7 @@ function Profile({match}: RouteComponentProps<{id: string; name: string}>) {
               Follow
             </Button>
           )}
-          <div style={{fontSize: 14, paddingLeft: 10}}>Follower count: {follProfile.followerCount}</div>
+          <div style={{fontSize: 14, paddingLeft: 10}}>Follower count: {userProfile.followerCount}</div>
         </div>
       </Header>
       <CardListContainer query="userMessages" userId={id ?? ''} emptyCta="This user hasn`t posted any messages yet." />

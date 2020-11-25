@@ -1,7 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
 import {useDispatch} from 'react-redux';
-import {useFirestoreConnect} from 'react-redux-firebase';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
 import {clearMessages, createMessage} from 'redux/modules/message/messageModule';
 import {CardListContainer, Header, InputCard} from 'components';
@@ -29,12 +28,6 @@ const Home = React.memo(() => {
       dispatch(clearMessages());
     }
   }, [dispatch, isLoggedIn]);
-
-  useFirestoreConnect({
-    collection: 'messages',
-    where: ['userId', '==', loggedInUserId ?? ''],
-    orderBy: ['createdAt', 'desc'],
-  });
 
   const postMessage = React.useCallback(() => {
     if (loggedInUserId) {

@@ -50,7 +50,7 @@ export const MessageCard = React.memo((props: MessageCardProps) => {
         <IconButton
           onClick={isLiked ? onUnlike : onLike}
           color={isLiked ? 'primary' : undefined}
-          aria-label="add to favorites"
+          aria-label="like-post"
         >
           <FavoriteIcon />
         </IconButton>

@@ -1,8 +1,3 @@
-// interface Action {
-//   readonly type: string;
-//   readonly payload?: any;
-// }
-
 type obj = Record<string, unknown>;
 
 type unnull = undefined | null;
