@@ -6,10 +6,10 @@ import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
 import {isLoaded, ReactReduxFirebaseProvider} from 'react-redux-firebase';
 import {reactReduxFirebaseProps} from 'redux/store/firebaseSetup';
 import {AppState} from 'redux/models/state';
-import * as serviceWorker from './serviceWorker';
 import App from './App';
-import './index.css';
 import {store} from 'redux/store/store';
+import * as serviceWorker from './serviceWorker';
+import './index.css';
 
 const theme = createMuiTheme({
   palette: {
@@ -17,7 +17,7 @@ const theme = createMuiTheme({
     secondary: {main: '#1e1e1e'},
     error: {main: '#cf6679'},
     success: {main: '#004c40'},
-    action: {disabled: '#838383', disabledBackground: '#CCCCCC'},
+    action: {disabled: 'white', disabledBackground: '#CCCCCC'},
   },
 });
 

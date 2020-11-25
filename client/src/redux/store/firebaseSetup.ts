@@ -34,3 +34,6 @@ export const reactReduxFirebaseProps: ReactReduxFirebaseProviderProps = {
   dispatch,
   createFirestoreInstance,
 };
+
+export const atomicIncrement = firebase.firestore.FieldValue.increment(1);
+export const atomicDecrement = firebase.firestore.FieldValue.increment(-1);

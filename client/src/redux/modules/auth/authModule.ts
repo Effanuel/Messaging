@@ -23,7 +23,7 @@ export const signUpUser = createThunk<SignUpUserPayload>(SIGN_UP, async (payload
   return await firestore()
     .collection('users')
     .doc(authResponse.user?.uid)
-    .set({username, email, isVerified: false, following: [], followerCount: 0, postCount: 0});
+    .set({username, email, isVerified: false, followerCount: 0});
 });
 
 type SignInUserPayload = {email: string; password: string};
@@ -46,7 +46,7 @@ const defaultState = {
 export const authReducer = createReducer<AuthState>(defaultState, (builder) =>
   builder
     .addCase(clearAuthState, () => defaultState)
-    .addCase(signUpUser.pending, (state) => {
+    .addCase(signUpUser.pending, () => {
       return {...defaultState, loading: true};
     })
     .addCase(signUpUser.fulfilled, () => {
@@ -56,7 +56,7 @@ export const authReducer = createReducer<AuthState>(defaultState, (builder) =>
       return {...defaultState, error: payload ?? 'error'};
     })
     .addCase(signOutUser.fulfilled, () => defaultState)
-    .addCase(signInUser.pending, (state) => {
+    .addCase(signInUser.pending, () => {
       return {...defaultState, loading: true};
     })
     .addCase(signInUser.fulfilled, () => defaultState)

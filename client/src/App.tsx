@@ -17,16 +17,12 @@ const useStyles = makeStyles((theme) => ({
   appBar: {display: 'flex', flex: 1, height: '5px'},
   emptyLoader: {height: 5},
   section: {display: 'flex', padding: 10, alignItems: 'center'},
-  container: {
-    backgroundColor: '#1c1c1c',
-  },
+  container: {backgroundColor: '#1c1c1c'},
   test: {
     display: 'flex',
     flexDirection: 'column',
     padding: 10,
-    '& > *': {
-      marginBottom: 20,
-    },
+    '& > *': {marginBottom: 20},
   },
 }));
 
@@ -38,18 +34,18 @@ function App() {
   return (
     <div className={classes.root}>
       <Grid container justify="center">
-        <Grid direction="row" item xs={2}>
+        <Grid item xs={2}>
           <div className={classes.section}>
             <NavbarLogo />
           </div>
         </Grid>
 
-        <Grid direction="row" item xs={4}>
+        <Grid item xs={4}>
           {authLoading ? <LinearProgress /> : <div className={classes.emptyLoader}></div>}
           <Content />
         </Grid>
 
-        <Grid direction="row" item xs={2}>
+        <Grid item xs={2}>
           <div className={classes.test}>
             <SearchBar />
             {isLoggedIn ? <SignedInLinks /> : <SignedOutLinks />}
