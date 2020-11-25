@@ -1,5 +1,5 @@
 import {createAction, createAsyncThunk, createReducer} from '@reduxjs/toolkit';
-import {createThunk, errorHandler, ThunkApiConfig, withPayloadType} from 'redux/helpers/thunks';
+import {createThunk, errorHandler, ThunkApiConfig} from 'redux/helpers/thunks';
 import {atomicDecrement, atomicIncrement} from 'redux/store/firebaseSetup';
 import {
   CLEAR_MESSAGES,
@@ -9,14 +9,12 @@ import {
   GET_PROFILE,
   LIKE_MESSAGE,
   MessageState,
-  SET_PROFILE,
   UNFOLLOW_USER,
   UNLIKE_MESSAGE,
 } from './types';
 
 export const PAGE_LIMIT = 6;
 
-export const setProfile = createAction(SET_PROFILE, withPayloadType<{userId: string; name: string}>());
 export const clearMessages = createAction(CLEAR_MESSAGES);
 
 export const likeMessage = createThunk<{postId: string}>(LIKE_MESSAGE, async ({postId}, firebase, getState) => {
@@ -64,13 +62,15 @@ export const unfollowUser = createThunk<{userId: string}>(UNFOLLOW_USER, async (
 });
 
 export const getProfile = createThunk<{userId: string}>(GET_PROFILE, async ({userId}, firebase, getState) => {
-  const snapshot = await firebase()
-    .firestore()
-    .collection('follows')
-    .where('userId', '==', userId)
-    .where('followerId', '==', getState().firebase.auth.uid)
-    .get();
-  return {isFollowing: !snapshot.empty};
+  const firestore = firebase().firestore();
+  const {uid} = getState().firebase.auth;
+
+  const followsSnapshot = uid
+    ? await firestore.collection('follows').where('userId', '==', userId).where('followerId', '==', uid).get()
+    : {empty: true};
+  const userProfile = (await firestore.collection('users').doc(userId).get()).data();
+
+  return {...userProfile, isFollowing: !followsSnapshot.empty};
 });
 
 type GetMessagesProps = {
@@ -159,7 +159,7 @@ export const getMessages = createAsyncThunk<any, GetMessagesProps, ThunkApiConfi
 const defaultState = {
   userId: '',
   messages: [],
-  profile: {userId: '', isFollowing: false, name: ''},
+  profile: {userId: '', isFollowing: false, name: '', followerCount: 0},
   loading: false,
   currentPage: 0,
   error: '',
@@ -222,13 +222,10 @@ export const messageReducer = createReducer<MessageState>(defaultState, (builder
       return {...state, profile: payload};
     })
     .addCase(followUser.fulfilled, (state, {payload}) => {
-      return {...state, profile: payload};
+      return {...state, profile: {...state.profile, ...payload, followerCount: state.profile.followerCount + 1}};
     })
     .addCase(unfollowUser.fulfilled, (state, {payload}) => {
-      return {...state, profile: payload};
-    })
-    .addCase(setProfile, (state, {payload}) => {
-      return {...state, profile: {...state.profile, ...payload}};
+      return {...state, profile: {...state.profile, ...payload, followerCount: state.profile.followerCount - 1}};
     })
     .addCase(clearMessages, (state) => {
       return {...state, messages: []};

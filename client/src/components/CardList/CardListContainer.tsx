@@ -24,9 +24,7 @@ function CardListContainer({userId, emptyCta, query}: Props) {
   React.useEffect(() => {
     if (userId) {
       dispatch(getMessages({type: 'initial', userId: userId ?? '', query}));
-      if (loggedInUserId) {
-        dispatch(getProfile({userId}));
-      }
+      dispatch(getProfile({userId}));
     }
   }, [dispatch, userId, query, loggedInUserId]);
 

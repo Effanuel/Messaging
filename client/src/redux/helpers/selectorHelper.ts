@@ -7,6 +7,7 @@ interface FirestoreUsers {
   [userId: string]: {
     email: string;
     username: string;
+    followerCount: number;
   };
 }
 

@@ -24,15 +24,18 @@ function Profile({match}: RouteComponentProps<{id: string; name: string}>) {
   return (
     <>
       <Header name="PROFILE" label={name}>
-        {!isLoggedIn ? null : follProfile.isFollowing ? (
-          <Button variant="contained" color="primary" size="small" onClick={unfollowUserAction}>
-            Unfollow
-          </Button>
-        ) : (
-          <Button variant="outlined" color="primary" size="small" onClick={followUserAction}>
-            Follow
-          </Button>
-        )}
+        <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+          {!isLoggedIn ? null : follProfile.isFollowing ? (
+            <Button variant="contained" color="primary" size="small" onClick={unfollowUserAction}>
+              Unfollow
+            </Button>
+          ) : (
+            <Button variant="outlined" color="primary" size="small" onClick={followUserAction}>
+              Follow
+            </Button>
+          )}
+          <div style={{fontSize: 14, paddingLeft: 10}}>Follower count: {follProfile.followerCount}</div>
+        </div>
       </Header>
       <CardListContainer query="userMessages" userId={id ?? ''} emptyCta="This user hasn`t posted any messages yet." />
     </>
