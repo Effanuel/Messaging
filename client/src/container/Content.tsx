@@ -4,6 +4,7 @@ import SignIn from 'container/auth/SignIn';
 import SignUp from 'container/auth/SignUp';
 import Home from 'container/home/Home';
 import Profile from 'container/profile/Profile';
+import NotFound from 'container/notFound/NotFound';
 
 function Content() {
   return (
@@ -12,6 +13,7 @@ function Content() {
       <Route path="/user/:name/:id" component={Profile} />
       <Route path="/signin" component={SignIn} />
       <Route path="/signup" component={SignUp} />
+      <Route component={NotFound} />
     </Switch>
   );
 }

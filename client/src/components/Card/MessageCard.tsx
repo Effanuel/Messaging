@@ -22,12 +22,13 @@ interface MessageCardProps {
   id?: string;
   createdAt: string;
   isLiked?: boolean;
+  likes?: number;
   onLikePost: (messageId: string) => void;
   onUnlikePost: (messageId: string) => void;
 }
 
 export const MessageCard = React.memo((props: MessageCardProps) => {
-  const {username, createdAt, text, onLikePost, onUnlikePost, id, isLiked} = props;
+  const {username, createdAt, text, onLikePost, onUnlikePost, id, isLiked, likes} = props;
   const classes = useStyles();
 
   const onLike = React.useCallback(() => {
@@ -44,15 +45,18 @@ export const MessageCard = React.memo((props: MessageCardProps) => {
 
   const renderAction = React.useMemo(
     () => (
-      <IconButton
-        onClick={isLiked ? onUnlike : onLike}
-        color={isLiked ? 'primary' : undefined}
-        aria-label="add to favorites"
-      >
-        <FavoriteIcon />
-      </IconButton>
+      <>
+        <span style={{color: 'grey'}}>{likes ?? 0}</span>
+        <IconButton
+          onClick={isLiked ? onUnlike : onLike}
+          color={isLiked ? 'primary' : undefined}
+          aria-label="add to favorites"
+        >
+          <FavoriteIcon />
+        </IconButton>
+      </>
     ),
-    [onLike, onUnlike, isLiked],
+    [onLike, onUnlike, isLiked, likes],
   );
 
   return (

@@ -1,8 +1,5 @@
-import {Button, makeStyles} from '@material-ui/core';
+import {makeStyles} from '@material-ui/core';
 import React from 'react';
-import {useDispatch} from 'react-redux';
-import {useReduxSelector} from 'redux/helpers/selectorHelper';
-import {followUser, unfollowUser} from 'redux/modules/message/messageModule';
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -20,38 +17,17 @@ const useStyles = makeStyles((theme) => ({
 interface Props {
   name: string;
   label?: string;
-  userId?: string;
+  children?: React.ReactNode;
 }
 
-function Header({name, label, userId}: Props) {
+function Header({name, label, children}: Props) {
   const classes = useStyles();
-  const dispatch = useDispatch();
-
-  const {follProfile} = useReduxSelector('follProfile');
-
-  const followUserAction = React.useCallback(() => {
-    dispatch(followUser({userId: userId ?? ''}));
-  }, [dispatch, userId]);
-
-  const unfollowUserAction = React.useCallback(() => {
-    dispatch(unfollowUser({userId: userId ?? ''}));
-  }, [dispatch, userId]);
 
   return (
     <div className={classes.header}>
       {name}
       <div className={classes.label}>{label}</div>
-      <div>
-        {follProfile.isFollowing ? (
-          <Button variant="contained" color="primary" size="small" onClick={unfollowUserAction}>
-            Unfollow
-          </Button>
-        ) : (
-          <Button variant="outlined" color="primary" size="small" onClick={followUserAction}>
-            Follow
-          </Button>
-        )}
-      </div>
+      <div>{children}</div>
     </div>
   );
 }

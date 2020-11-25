@@ -3,20 +3,16 @@ import React from 'react';
 import {CardList} from 'components';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
 import {useDispatch} from 'react-redux';
-import {getProfile} from 'redux/modules/message/messageModule';
+import {getMessages, getProfile} from 'redux/modules/message/messageModule';
 import {Button, ButtonGroup} from '@material-ui/core';
-import {AsyncThunkAction} from '@reduxjs/toolkit';
-import {ThunkApiConfig} from 'redux/helpers/thunks';
 
-function CardListContainer<T>({
-  userId,
-  emptyCta,
-  loadMessagesAction,
-}: {
-  userId: string;
+interface Props {
+  userId: string | undefined;
   emptyCta: string;
-  loadMessagesAction: (args: {type: any; userId: string}) => AsyncThunkAction<any, T, ThunkApiConfig>;
-}) {
+  query: 'userMessages' | 'followedUsersMessages';
+}
+
+function CardListContainer({userId, emptyCta, query}: Props) {
   const dispatch = useDispatch();
   const {messages, isNextPageDisabled, currentPage, loggedInUserId} = useReduxSelector(
     'messages',
@@ -26,26 +22,30 @@ function CardListContainer<T>({
   );
 
   React.useEffect(() => {
-    dispatch(loadMessagesAction({type: 'initial', userId: userId ?? ''}));
-    dispatch(getProfile({userId}));
-  }, [dispatch, userId, loadMessagesAction]);
+    if (userId) {
+      dispatch(getMessages({type: 'initial', userId: userId ?? '', query}));
+      if (loggedInUserId) {
+        dispatch(getProfile({userId}));
+      }
+    }
+  }, [dispatch, userId, query, loggedInUserId]);
 
   const nextPage = React.useCallback(() => {
-    dispatch(loadMessagesAction({type: 'forward', userId: userId ?? ''}));
-  }, [dispatch, userId, loadMessagesAction]);
+    dispatch(getMessages({type: 'forward', userId: userId ?? '', query}));
+  }, [dispatch, userId, query]);
 
   const prevPage = React.useCallback(() => {
-    dispatch(loadMessagesAction({type: 'backward', userId: userId ?? ''}));
-  }, [dispatch, userId, loadMessagesAction]);
+    dispatch(getMessages({type: 'backward', userId: userId ?? '', query}));
+  }, [dispatch, userId, query]);
 
   return (
     <div style={{display: 'flex', alignItems: 'center', flexDirection: 'column'}}>
-      {messages?.length && userId !== '' ? (
+      {messages?.length && userId !== undefined ? (
         <CardList firestoreMessages={messages} loggedInUserId={loggedInUserId} />
       ) : (
         <div style={{color: 'white', paddingTop: 20, paddingBottom: 20}}>{emptyCta} </div>
       )}
-      {messages?.length && userId !== '' ? (
+      {messages?.length && userId !== undefined ? (
         <ButtonGroup variant="contained" color="primary">
           <Button disabled={currentPage === 0} onClick={prevPage}>
             Previous

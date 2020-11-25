@@ -3,7 +3,7 @@ import _ from 'lodash';
 import {useDispatch} from 'react-redux';
 import {useFirestoreConnect} from 'react-redux-firebase';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
-import {createMessage, getFollowedUsersMessages} from 'redux/modules/message/messageModule';
+import {clearMessages, createMessage} from 'redux/modules/message/messageModule';
 import {CardListContainer, Header, InputCard} from 'components';
 import {makeStyles} from '@material-ui/core';
 
@@ -24,6 +24,12 @@ const Home = React.memo(() => {
 
   const {profile, loggedInUserId, isLoggedIn} = useReduxSelector('profile', 'loggedInUserId', 'isLoggedIn');
 
+  React.useEffect(() => {
+    if (!isLoggedIn) {
+      dispatch(clearMessages());
+    }
+  }, [dispatch, isLoggedIn]);
+
   useFirestoreConnect({
     collection: 'messages',
     where: ['userId', '==', loggedInUserId ?? ''],
@@ -31,7 +37,9 @@ const Home = React.memo(() => {
   });
 
   const postMessage = React.useCallback(() => {
-    dispatch(createMessage({text: message, username: profile.username, userId: loggedInUserId}));
+    if (loggedInUserId) {
+      dispatch(createMessage({text: message, username: profile.username, userId: loggedInUserId}));
+    }
     setMessage('');
   }, [dispatch, message, profile, loggedInUserId]);
 
@@ -40,7 +48,6 @@ const Home = React.memo(() => {
   }, []);
 
   const label = loggedInUserId === undefined ? 'Log in to post messages' : 'You haven`t posted any messages';
-
   return (
     <>
       <Header name="HOME" />
@@ -53,11 +60,7 @@ const Home = React.memo(() => {
             value={message}
           />
         )}
-        <CardListContainer
-          loadMessagesAction={getFollowedUsersMessages}
-          userId={loggedInUserId ?? ''}
-          emptyCta={label}
-        />
+        <CardListContainer query="followedUsersMessages" userId={loggedInUserId ?? ''} emptyCta={label} />
       </div>
     </>
   );

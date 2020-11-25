@@ -2,6 +2,8 @@ import {AsyncThunk, createAsyncThunk} from '@reduxjs/toolkit';
 import {ExtendedFirebaseInstance} from 'react-redux-firebase';
 import {AppState} from 'redux/models/state';
 
+export const withPayloadType = <T>() => (payload: T) => ({payload});
+
 export interface ThunkApiConfig {
   rejected: string;
   extra: () => ExtendedFirebaseInstance;

@@ -7,6 +7,9 @@ export const UNLIKE_MESSAGE = 'message/UNLIKE_MESSAGE';
 export const FOLLOW_USER = 'message/FOLLOW_USER';
 export const UNFOLLOW_USER = 'message/UNFOLLOW_USER';
 
+export const SET_PROFILE = 'message/SET_PROFILE';
+export const CLEAR_MESSAGES = 'message/CLEAR_MESSAGES';
+
 export interface Message {
   id: string;
   username: string;
@@ -14,10 +17,13 @@ export interface Message {
   text: string;
   createdAt: {seconds: number; nanoseconds: number};
   isLiked: boolean;
+  likes?: number;
 }
 
 export interface Profile {
+  userId: string;
   isFollowing: boolean;
+  name: string;
 }
 
 export interface MessageState {

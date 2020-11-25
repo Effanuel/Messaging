@@ -17,7 +17,7 @@ interface Selectors {
   authDisplayName: string | null;
   firebaseInitializing: boolean;
   profile: any;
-  loggedInUserId: string;
+  loggedInUserId: string | undefined;
 
   firestoreMessages: Message[];
   firestoreUsers: FirestoreUsers | undefined;

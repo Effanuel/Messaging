@@ -8,7 +8,7 @@ import {Message} from 'redux/modules/message/types';
 
 interface Props {
   firestoreMessages: Message[];
-  loggedInUserId: string;
+  loggedInUserId: string | undefined;
 }
 
 function CardList({firestoreMessages, loggedInUserId}: Props) {
@@ -35,19 +35,10 @@ function CardList({firestoreMessages, loggedInUserId}: Props) {
     <>
       {!_.isNil(firestoreMessages) &&
         firestoreMessages.map((message, index) => {
-          const {username, text, createdAt, id, isLiked} = message;
+          const {createdAt, ...rest} = message;
           const date = moment(createdAt?.seconds * 1000).fromNow();
           return (
-            <MessageCard
-              key={index}
-              id={id}
-              username={username}
-              isLiked={isLiked}
-              createdAt={date}
-              text={text}
-              onLikePost={onLikePost}
-              onUnlikePost={onUnlikePost}
-            />
+            <MessageCard key={index} {...rest} createdAt={date} onLikePost={onLikePost} onUnlikePost={onUnlikePost} />
           );
         })}
     </>
