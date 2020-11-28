@@ -23,25 +23,26 @@ interface MessageCardProps {
   createdAt: string;
   isLiked?: boolean;
   likes?: number;
-  onLikePost: (messageId: string) => void;
-  onUnlikePost: (messageId: string) => void;
+  userId: string;
+  onLikePost: (messageId: string, userId: string) => void;
+  onUnlikePost: (messageId: string, userId: string) => void;
 }
 
 export const MessageCard = React.memo((props: MessageCardProps) => {
-  const {username, createdAt, text, onLikePost, onUnlikePost, id, isLiked, likes} = props;
+  const {username, createdAt, text, onLikePost, onUnlikePost, id, isLiked, likes, userId} = props;
   const classes = useStyles();
 
   const onLike = React.useCallback(() => {
     if (id) {
-      onLikePost(id);
+      onLikePost(id, userId);
     }
-  }, [id, onLikePost]);
+  }, [id, onLikePost, userId]);
 
   const onUnlike = React.useCallback(() => {
     if (id) {
-      onUnlikePost(id);
+      onUnlikePost(id, userId);
     }
-  }, [id, onUnlikePost]);
+  }, [id, onUnlikePost, userId]);
 
   const renderAction = React.useMemo(
     () => (

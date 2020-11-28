@@ -15,16 +15,16 @@ function CardList({firestoreMessages, loggedInUserId}: Props) {
   const dispatch = useDispatch();
 
   const onLikePost = React.useCallback(
-    (postId: string) => {
-      if (loggedInUserId) {
+    (postId: string, userId: string) => {
+      if (loggedInUserId && loggedInUserId !== userId) {
         dispatch(likeMessage({postId}));
       }
     },
     [dispatch, loggedInUserId],
   );
   const onUnlikePost = React.useCallback(
-    (postId: string) => {
-      if (loggedInUserId) {
+    (postId: string, userId: string) => {
+      if (loggedInUserId && loggedInUserId !== userId) {
         dispatch(unlikeMessage({postId}));
       }
     },
