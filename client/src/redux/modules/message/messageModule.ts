@@ -158,7 +158,7 @@ export const getMessages = createAsyncThunk<any, GetMessagesProps, ThunkApiConfi
 const defaultState = {
   userId: '',
   messages: [],
-  profile: {userId: '', isFollowing: false, name: '', followerCount: 0},
+  profile: {userId: '', isFollowing: false, name: '', followerCount: 0, isVerified: false},
   loading: false,
   currentPage: 0,
   error: '',

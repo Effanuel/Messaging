@@ -23,7 +23,7 @@ export const signUpUser = createThunk<SignUpUserPayload>(SIGN_UP, async (payload
   return await firestore()
     .collection('users')
     .doc(authResponse.user?.uid)
-    .set({username, email, isVerified: false, followerCount: 0});
+    .set({username, email, isVerified: false, followerCount: 0, isAdmin: false});
 });
 
 type SignInUserPayload = {email: string; password: string};

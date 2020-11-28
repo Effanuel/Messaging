@@ -2,7 +2,7 @@ import React from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import {Grid, LinearProgress} from '@material-ui/core';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
-import {SearchBar, SignedInLinks, SignedOutLinks} from 'components';
+import {AdminPanelLogo, SearchBar, SignedInLinks, SignedOutLinks} from 'components';
 import Content from 'container/Content';
 import {NavbarLogo} from 'components/Navbar/NavbarLogo';
 
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 function App() {
   const classes = useStyles();
 
-  const {isLoggedIn, authLoading} = useReduxSelector('isLoggedIn', 'authLoading');
+  const {isLoggedIn, authLoading, profile} = useReduxSelector('isLoggedIn', 'authLoading', 'profile');
 
   return (
     <div className={classes.root}>
@@ -38,6 +38,11 @@ function App() {
           <div className={classes.section}>
             <NavbarLogo />
           </div>
+          {profile?.isAdmin === true ? (
+            <div className={classes.section}>
+              <AdminPanelLogo />
+            </div>
+          ) : null}
         </Grid>
 
         <Grid item xs={4}>

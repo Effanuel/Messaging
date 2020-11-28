@@ -23,7 +23,7 @@ function Profile({match}: RouteComponentProps<{id: string; name: string}>) {
 
   return (
     <>
-      <Header name="PROFILE" label={name}>
+      <Header name="PROFILE" label={name} isVerified={userProfile?.isVerified}>
         <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
           {!isLoggedIn ? null : userProfile.isFollowing ? (
             <Button variant="contained" color="primary" size="small" onClick={unfollowUserAction}>

@@ -3,13 +3,15 @@ import {AppState} from 'redux/models/state';
 import {Message, Profile} from 'redux/modules/message/types';
 import {isNextPageDisabledSelector, userLoggedInSelector} from 'redux/selectors';
 
-interface FirestoreUsers {
-  [userId: string]: {
-    email: string;
-    username: string;
-    followerCount: number;
-  };
+export interface User {
+  id: string;
+  email: string;
+  username: string;
+  followerCount: number;
+  isVerified: boolean;
 }
+
+type FirestoreUsers = {[userId: string]: User};
 
 interface Selectors {
   isLoggedIn: ReturnType<typeof userLoggedInSelector>;
@@ -34,11 +36,13 @@ interface Selectors {
   currentPage: number;
   userProfile: Profile;
 
+  users: User[];
+
   state: any;
 }
 
 const buildSelectors = (state: AppState): Selectors => {
-  const {firebase, auth, message, firestore} = state;
+  const {firebase, auth, message, firestore, user} = state;
   return {
     isLoggedIn: userLoggedInSelector(state),
     isNextPageDisabled: isNextPageDisabledSelector(state),
@@ -61,6 +65,8 @@ const buildSelectors = (state: AppState): Selectors => {
     messages: message.messages.slice(0, 5),
     currentPage: message.currentPage,
     userProfile: message.profile,
+
+    users: user.users,
 
     state: firebase,
   };
