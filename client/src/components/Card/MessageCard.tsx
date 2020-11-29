@@ -2,6 +2,7 @@ import React from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import {Typography, Card, CardHeader, CardContent, Avatar, IconButton} from '@material-ui/core';
+import {useHistory} from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,6 +31,7 @@ interface MessageCardProps {
 }
 
 export const MessageCard = React.memo((props: MessageCardProps) => {
+  const history = useHistory();
   const {username, createdAt, text, onLikePost, onUnlikePost, id, isLiked, likes, userId} = props;
   const classes = useStyles();
 
@@ -61,6 +63,13 @@ export const MessageCard = React.memo((props: MessageCardProps) => {
     [onLike, onUnlike, isLiked, likes],
   );
 
+  const searchByTag = React.useCallback(
+    (tagName: string) => {
+      history.push(`/searchByTag/${tagName.replace(/#/g, '')}`);
+    },
+    [history],
+  );
+
   return (
     <Card className={classes.root}>
       <CardHeader
@@ -81,7 +90,7 @@ export const MessageCard = React.memo((props: MessageCardProps) => {
             return !word.match(/#/g) ? (
               `${word} `
             ) : (
-              <span key={index} className={classes.tag}>
+              <span key={index} className={classes.tag} onClick={() => searchByTag(word)}>
                 {`${word} `}
               </span>
             );
