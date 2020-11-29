@@ -2,7 +2,7 @@ import React from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import {Grid, LinearProgress} from '@material-ui/core';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
-import {AdminPanelLogo, SearchBar, SignedInLinks, SignedOutLinks} from 'components';
+import {AdminPanelLogo, UserSearchBar, TagSearchBar, SignedInLinks, SignedOutLinks} from 'components';
 import Content from 'container/Content';
 import {NavbarLogo} from 'components/Navbar/NavbarLogo';
 
@@ -52,7 +52,8 @@ function App() {
 
         <Grid item xs={2}>
           <div className={classes.test}>
-            <SearchBar />
+            <UserSearchBar />
+            <TagSearchBar />
             {isLoggedIn ? <SignedInLinks /> : <SignedOutLinks />}
           </div>
         </Grid>

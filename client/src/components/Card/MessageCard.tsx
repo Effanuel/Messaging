@@ -14,6 +14,7 @@ const useStyles = makeStyles((theme) => ({
   white: {color: 'rgba(255, 255, 255, 0.6)'},
   avatar: {backgroundColor: theme.palette.primary.main},
   cardContent: {padding: 25},
+  tag: {color: theme.palette.primary.main, '&:hover': {cursor: 'pointer'}},
 }));
 
 interface MessageCardProps {
@@ -76,7 +77,15 @@ export const MessageCard = React.memo((props: MessageCardProps) => {
       />
       <CardContent className={classes.cardContent}>
         <Typography className={classes.white} variant="body2" color="textSecondary" component="p">
-          {text}
+          {(text ?? '').split(' ').map((word, index) => {
+            return !word.match(/#/g) ? (
+              `${word} `
+            ) : (
+              <span key={index} className={classes.tag}>
+                {`${word} `}
+              </span>
+            );
+          })}
         </Typography>
       </CardContent>
     </Card>

@@ -14,7 +14,7 @@ interface Option {
   name: string;
 }
 
-export const SearchBar = React.memo(() => {
+export const UserSearchBar = React.memo(() => {
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation();

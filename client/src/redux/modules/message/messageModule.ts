@@ -38,7 +38,8 @@ export const unlikeMessage = createThunk<{postId: string}>(UNLIKE_MESSAGE, async
 
 type CreateMessageProps = {text: string; username: string; userId: string};
 export const createMessage = createThunk<CreateMessageProps>(CREATE_MESSAGE, async (payload, firebase) => {
-  const message = {...payload, createdAt: new Date()};
+  const tags = (payload.text.match(/#\w+/g) ?? []).map((tag) => tag.replace(/#/gm, ''));
+  const message = {...payload, createdAt: new Date(), tags};
   const {id} = await firebase().firestore().collection('messages').add(message);
   return {...message, createdAt: {seconds: new Date().getTime() / 1000}, id, likes: 0};
 });
@@ -75,11 +76,12 @@ export const getProfile = createThunk<{userId: string}>(GET_PROFILE, async ({use
 type GetMessagesProps = {
   type: 'initial' | 'forward' | 'backward';
   userId: string;
-  query: 'userMessages' | 'followedUsersMessages';
+  tagName?: string;
+  query: 'userMessages' | 'followedUsersMessages' | 'messagesByTag';
 };
 export const getMessages = createAsyncThunk<any, GetMessagesProps, ThunkApiConfig>(
   GET_MESSAGES,
-  async ({type, userId, query}, {rejectWithValue, extra: firebase, getState}) => {
+  async ({type, userId, query, tagName}, {rejectWithValue, extra: firebase, getState}) => {
     const firestore = firebase().firestore();
     const likesRef = firestore.collection('likes');
 
@@ -118,8 +120,17 @@ export const getMessages = createAsyncThunk<any, GetMessagesProps, ThunkApiConfi
         .where('userId', 'in', [getState().firebase.auth.uid, ...followedUserIds.slice(0, 9)]);
     }
 
+    function getMessagesByTag() {
+      return firestore.collection('messages').orderBy('createdAt', 'desc').where('tags', 'array-contains', tagName);
+    }
+
     try {
-      const messagesRef = query === 'userMessages' ? getMessages() : await getMessagesOfFollowedUsers();
+      const messagesRef =
+        query === 'userMessages'
+          ? getMessages()
+          : query === 'messagesByTag'
+          ? getMessagesByTag()
+          : await getMessagesOfFollowedUsers();
 
       switch (type) {
         case 'initial': {

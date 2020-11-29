@@ -9,10 +9,11 @@ import {getMessages, getProfile} from 'redux/modules/message/messageModule';
 interface Props {
   userId: string | undefined;
   emptyCta: string;
-  query: 'userMessages' | 'followedUsersMessages';
+  query: 'userMessages' | 'followedUsersMessages' | 'messagesByTag';
+  tagName?: string;
 }
 
-function CardListContainer({userId, emptyCta, query}: Props) {
+function CardListContainer({userId, emptyCta, query, tagName}: Props) {
   const dispatch = useDispatch();
   const {messages, isNextPageDisabled, currentPage, loggedInUserId} = useReduxSelector(
     'messages',
@@ -23,22 +24,22 @@ function CardListContainer({userId, emptyCta, query}: Props) {
 
   React.useEffect(() => {
     if (userId) {
-      dispatch(getMessages({type: 'initial', userId, query}));
+      dispatch(getMessages({type: 'initial', userId, query, tagName}));
       dispatch(getProfile({userId}));
     }
-  }, [dispatch, userId, query]);
+  }, [dispatch, userId, query, tagName]);
 
   const nextPage = React.useCallback(() => {
     if (userId) {
-      dispatch(getMessages({type: 'forward', userId, query}));
+      dispatch(getMessages({type: 'forward', userId, query, tagName}));
     }
-  }, [dispatch, userId, query]);
+  }, [dispatch, userId, query, tagName]);
 
   const prevPage = React.useCallback(() => {
     if (userId) {
-      dispatch(getMessages({type: 'backward', userId, query}));
+      dispatch(getMessages({type: 'backward', userId, query, tagName}));
     }
-  }, [dispatch, userId, query]);
+  }, [dispatch, userId, query, tagName]);
 
   return (
     <div style={{display: 'flex', alignItems: 'center', flexDirection: 'column'}}>
