@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     color: 'rgba(255, 255, 255, 0.6)',
   },
   white: {color: 'rgba(255, 255, 255, 0.6)'},
-  avatar: {backgroundColor: theme.palette.primary.main},
+  avatar: {backgroundColor: theme.palette.primary.main, '&&&&:hover': {cursor: 'pointer'}},
   cardContent: {padding: 25},
   tag: {color: theme.palette.primary.main, '&:hover': {cursor: 'pointer'}},
 }));
@@ -70,11 +70,15 @@ export const MessageCard = React.memo((props: MessageCardProps) => {
     [history],
   );
 
+  const goToUserProfile = React.useCallback(() => {
+    history.push(`/user/${username}/${id}`);
+  }, [history, username, id]);
+
   return (
     <Card className={classes.root}>
       <CardHeader
         avatar={
-          <Avatar aria-label="recipe" className={classes.avatar}>
+          <Avatar aria-label="recipe" className={classes.avatar} onClick={goToUserProfile}>
             {username?.[0] ?? 'T'}
           </Avatar>
         }
