@@ -68,7 +68,7 @@ export const UserSearchBar = React.memo(() => {
         value={value}
         InputLabelProps={{style: {color: 'white', paddingLeft: 10}}}
         InputProps={{
-          ...params.InputProps, //'#00796b' '#02b89b'
+          ...params.InputProps,
           style: {color: 'white', borderRadius: '5px', border: '1px solid #056c60', paddingLeft: 10},
           endAdornment: (
             <>

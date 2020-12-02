@@ -6,8 +6,7 @@ export function useDispatcher(wrapper: (func: Thunk) => void, func: () => Thunk)
   return React.useCallback((e: any) => wrapper(func()), [wrapper, func]);
 }
 
-//@ts-ignore
-export const useDebouncedEffect = (effect, delay, deps) => {
+export const useDebouncedEffect = (effect: any, delay: number, deps: any) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const callback = React.useCallback(effect, deps);
 

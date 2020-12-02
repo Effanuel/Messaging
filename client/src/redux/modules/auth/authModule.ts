@@ -6,9 +6,7 @@ import {AuthState, CLEAR_AUTH_STATE, SIGN_IN, SIGN_OUT, SIGN_UP} from './types';
 async function throwIfUsernameExists(firestore: () => ExtendedFirestoreInstance, username: string) {
   const snapshot = await firestore().collection('users').where('username', '==', username).get();
   const usernameExists = Boolean(snapshot.docs.map((doc) => doc.data())?.length);
-  if (usernameExists) {
-    throw {code: 'auth/username-exists'};
-  }
+  if (usernameExists) throw {code: 'auth/username-exists'};
 }
 
 type SignUpUserPayload = {username: string; email: string; password: string};

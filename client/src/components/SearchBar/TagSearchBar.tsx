@@ -30,9 +30,7 @@ function TagSearchBar() {
         value={value}
         onChange={onInputChange}
         InputLabelProps={{style: {color: 'white', paddingLeft: 10}}}
-        InputProps={{
-          style: {color: 'white', borderRadius: '5px', border: '1px solid #056c60', paddingLeft: 10},
-        }}
+        InputProps={{style: {color: 'white', borderRadius: '5px', border: '1px solid #056c60', paddingLeft: 10}}}
       />
     </div>
   );

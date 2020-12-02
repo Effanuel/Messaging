@@ -25,11 +25,10 @@ interface MessageCardProps {
   value: string;
 }
 
-export const InputCard = React.memo((props: MessageCardProps) => {
-  const {username, onActionClick, onTextChange, value} = props;
+export const InputCard = React.memo(({username, onActionClick, onTextChange, value}: MessageCardProps) => {
   const classes = useStyles();
 
-  const inputLimitReacted = React.useMemo(() => (value?.length ?? 0) > 150, [value]);
+  const inputLimitReacted = (value?.length ?? 0) > 150;
 
   const renderAction = React.useMemo(
     () => (

@@ -1,8 +1,8 @@
 import React from 'react';
+import {useHistory} from 'react-router-dom';
 import {makeStyles} from '@material-ui/core/styles';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import {Typography, Card, CardHeader, CardContent, Avatar, IconButton} from '@material-ui/core';
-import {useHistory} from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,20 +31,16 @@ interface MessageCardProps {
 }
 
 export const MessageCard = React.memo((props: MessageCardProps) => {
-  const history = useHistory();
   const {username, createdAt, text, onLikePost, onUnlikePost, id, isLiked, likes, userId} = props;
+  const history = useHistory();
   const classes = useStyles();
 
   const onLike = React.useCallback(() => {
-    if (id) {
-      onLikePost(id, userId);
-    }
+    if (id) onLikePost(id, userId);
   }, [id, onLikePost, userId]);
 
   const onUnlike = React.useCallback(() => {
-    if (id) {
-      onUnlikePost(id, userId);
-    }
+    if (id) onUnlikePost(id, userId);
   }, [id, onUnlikePost, userId]);
 
   const renderAction = React.useMemo(
