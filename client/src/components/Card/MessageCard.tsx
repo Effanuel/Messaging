@@ -67,8 +67,8 @@ export const MessageCard = React.memo((props: MessageCardProps) => {
   );
 
   const goToUserProfile = React.useCallback(() => {
-    history.push(`/user/${username}/${id}`);
-  }, [history, username, id]);
+    history.push(`/user/${username}/${userId}`);
+  }, [history, username, userId]);
 
   return (
     <Card className={classes.root}>

@@ -11,7 +11,7 @@ function Profile({match}: RouteComponentProps<{id: string; name: string}>) {
   const {name, id} = match.params;
   const dispatch = useDispatch();
 
-  const {userProfile, isLoggedIn} = useReduxSelector('userProfile', 'isLoggedIn');
+  const {userProfile, isLoggedIn, loggedInUserId} = useReduxSelector('userProfile', 'isLoggedIn', 'loggedInUserId');
 
   const followUserAction = React.useCallback(() => {
     dispatch(followUser({userId: id}));
@@ -25,7 +25,7 @@ function Profile({match}: RouteComponentProps<{id: string; name: string}>) {
     <>
       <Header name="PROFILE" label={name} isVerified={userProfile?.isVerified}>
         <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-          {!isLoggedIn ? null : userProfile.isFollowing ? (
+          {!isLoggedIn || loggedInUserId === id ? null : userProfile.isFollowing ? (
             <Button variant="contained" color="primary" size="small" onClick={unfollowUserAction}>
               Unfollow
             </Button>
