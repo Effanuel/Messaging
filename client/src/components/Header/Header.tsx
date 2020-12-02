@@ -1,5 +1,6 @@
-import {makeStyles} from '@material-ui/core';
 import React from 'react';
+import {Chip, makeStyles} from '@material-ui/core';
+import CheckIcon from '@material-ui/icons/Check';
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -18,15 +19,19 @@ interface Props {
   name: string;
   label?: string;
   children?: React.ReactNode;
+  isVerified?: boolean;
 }
 
-function Header({name, label, children}: Props) {
+function Header({name, label, children, isVerified}: Props) {
   const classes = useStyles();
 
   return (
     <div className={classes.header}>
       {name}
       <div className={classes.label}>{label}</div>
+      {isVerified && (
+        <Chip color="primary" size="small" icon={<CheckIcon />} label="Verified" style={{marginRight: 10}} />
+      )}
       <div>{children}</div>
     </div>
   );

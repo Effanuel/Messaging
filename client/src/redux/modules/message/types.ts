@@ -24,6 +24,7 @@ export interface Profile {
   isFollowing: boolean;
   name: string;
   followerCount: number;
+  isVerified: boolean;
 }
 
 export interface MessageState {

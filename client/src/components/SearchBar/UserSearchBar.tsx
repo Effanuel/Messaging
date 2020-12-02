@@ -14,7 +14,7 @@ interface Option {
   name: string;
 }
 
-export const SearchBar = React.memo(() => {
+export const UserSearchBar = React.memo(() => {
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
@@ -68,7 +68,7 @@ export const SearchBar = React.memo(() => {
         value={value}
         InputLabelProps={{style: {color: 'white', paddingLeft: 10}}}
         InputProps={{
-          ...params.InputProps, //'#00796b' '#02b89b'
+          ...params.InputProps,
           style: {color: 'white', borderRadius: '5px', border: '1px solid #056c60', paddingLeft: 10},
           endAdornment: (
             <>
