@@ -12,9 +12,11 @@ function TagSearchBar() {
 
   const searchByTag = React.useCallback(
     (event: any) => {
-      if (event.key === 'Enter') {
+      const trimmedValue = value.replace(/\s+/g, '');
+      if (event.key === 'Enter' && trimmedValue !== '') {
         event.preventDefault();
-        history.push(`/searchByTag/${value}`);
+        const filter = value.trim().replace(/\s+|\//g, ',');
+        history.push(`/searchByTag/${filter}`);
         setValue('');
       }
     },

@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 22,
     height: 50,
   },
-  label: {color: 'rgba(255, 255, 255, 0.6)', marginLeft: 10, marginRight: 10},
+  label: {color: 'rgba(255, 255, 255, 0.6)', marginLeft: 10, marginRight: 10, fontSize: 14},
 }));
 
 interface Props {

@@ -76,12 +76,12 @@ export const getProfile = createThunk<{userId: string}>(GET_PROFILE, async ({use
 type GetMessagesProps = {
   type: 'initial' | 'forward' | 'backward';
   userId: string;
-  tagName?: string;
+  tagNames?: string[];
   query: 'userMessages' | 'followedUsersMessages' | 'messagesByTag';
 };
 export const getMessages = createAsyncThunk<any, GetMessagesProps, ThunkApiConfig>(
   GET_MESSAGES,
-  async ({type, userId, query, tagName}, {rejectWithValue, extra: firebase, getState}) => {
+  async ({type, userId, query, tagNames}, {extra: firebase, getState}) => {
     const firestore = firebase().firestore();
     const likesRef = firestore.collection('likes');
 
@@ -121,7 +121,10 @@ export const getMessages = createAsyncThunk<any, GetMessagesProps, ThunkApiConfi
     }
 
     function getMessagesByTag() {
-      return firestore.collection('messages').orderBy('createdAt', 'desc').where('tags', 'array-contains', tagName);
+      return firestore
+        .collection('messages')
+        .orderBy('createdAt', 'desc')
+        .where('tags', 'array-contains-any', tagNames);
     }
 
     try {
@@ -160,8 +163,7 @@ export const getMessages = createAsyncThunk<any, GetMessagesProps, ThunkApiConfi
         }
       }
     } catch (err) {
-      const errorMessage: string = errorHandler?.[err?.code] ?? 'error';
-      return rejectWithValue(errorMessage);
+      return {messages: []};
     }
   },
 );
@@ -194,7 +196,7 @@ export const messageReducer = createReducer<MessageState>(defaultState, (builder
         return {...state, messages, likes, userId, loading: false, error: '', currentPage: 0};
       } else {
         return messages.length == 0
-          ? {...state, loading: false, error: ''}
+          ? {...state, messages: [], loading: false, error: ''}
           : {...state, messages, likes, userId, currentPage: state.currentPage + movePage};
       }
     })
