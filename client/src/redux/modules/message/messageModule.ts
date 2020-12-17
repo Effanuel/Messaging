@@ -1,5 +1,5 @@
 import {createAction, createAsyncThunk, createReducer} from '@reduxjs/toolkit';
-import {createThunk, errorHandler, ThunkApiConfig} from 'redux/helpers/thunks';
+import {createThunk, ThunkApiConfig} from 'redux/helpers/thunks';
 import {atomicDecrement, atomicIncrement} from 'redux/store/firebaseSetup';
 import {
   CLEAR_MESSAGES,
