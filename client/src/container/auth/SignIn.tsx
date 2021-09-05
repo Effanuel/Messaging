@@ -9,7 +9,7 @@ import {Values} from 'common/form-validations';
 function SignIn() {
   const dispatch = useDispatch();
 
-  const {isLoggedIn} = useReduxSelector('isLoggedIn');
+  const {authenticated} = useReduxSelector('authenticated');
 
   React.useEffect(() => {
     dispatch(clearAuthState());
@@ -22,13 +22,13 @@ function SignIn() {
     [dispatch],
   );
 
-  if (isLoggedIn) {
+  if (authenticated) {
     return <Redirect to="/" />;
   }
 
   return (
-    <Form inputValues={{email: '', password: ''}} headerTitle={'Sign in'} submitCta={'Sign in'} onSubmit={signIn}>
-      <InputField name="email" label="Email" />
+    <Form inputValues={{username: '', password: ''}} headerTitle="Sign in" submitCta="Sign in" onSubmit={signIn}>
+      <InputField name="username" label="Username" />
       <InputField name="password" label="Password" type="password" />
     </Form>
   );

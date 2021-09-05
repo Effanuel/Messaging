@@ -8,27 +8,18 @@ import {Message} from 'redux/modules/message/types';
 
 interface Props {
   firestoreMessages: Message[];
-  loggedInUserId: string | undefined;
 }
 
-function CardList({firestoreMessages, loggedInUserId}: Props) {
+function CardList({firestoreMessages}: Props) {
   const dispatch = useDispatch();
 
   const onLikePost = React.useCallback(
-    (postId: string, userId: string) => {
-      if (loggedInUserId && loggedInUserId !== userId) {
-        dispatch(likeMessage({postId}));
-      }
-    },
-    [dispatch, loggedInUserId],
+    (messageId: string, userId: string) => dispatch(likeMessage({messageId})),
+    [dispatch],
   );
   const onUnlikePost = React.useCallback(
-    (postId: string, userId: string) => {
-      if (loggedInUserId && loggedInUserId !== userId) {
-        dispatch(unlikeMessage({postId}));
-      }
-    },
-    [dispatch, loggedInUserId],
+    (messageId: string, userId: string) => dispatch(unlikeMessage({messageId})),
+    [dispatch],
   );
 
   return (
@@ -36,7 +27,7 @@ function CardList({firestoreMessages, loggedInUserId}: Props) {
       {!_.isNil(firestoreMessages) &&
         firestoreMessages.map((message, index) => {
           const {createdAt, ...rest} = message;
-          const date = moment(createdAt?.seconds * 1000).fromNow();
+          const date = moment(createdAt).fromNow();
           return (
             <MessageCard key={index} {...rest} createdAt={date} onLikePost={onLikePost} onUnlikePost={onUnlikePost} />
           );

@@ -15,15 +15,11 @@ interface Props {
 
 function CardListContainer({userId, emptyCta, query, tagNames}: Props) {
   const dispatch = useDispatch();
-  const {messages, isNextPageDisabled, currentPage, loggedInUserId} = useReduxSelector(
-    'messages',
-    'isNextPageDisabled',
-    'currentPage',
-    'loggedInUserId',
-  );
+  const {messages, isNextPageDisabled, currentPage} = useReduxSelector('messages', 'isNextPageDisabled', 'currentPage');
 
   React.useEffect(() => {
     if (userId) {
+      console.log('get messages');
       dispatch(getMessages({type: 'initial', userId, query, tagNames}));
       dispatch(getProfile({userId}));
     }
@@ -43,12 +39,12 @@ function CardListContainer({userId, emptyCta, query, tagNames}: Props) {
 
   return (
     <div style={{display: 'flex', alignItems: 'center', flexDirection: 'column'}}>
-      {messages?.length && userId !== undefined ? (
-        <CardList firestoreMessages={messages} loggedInUserId={loggedInUserId} />
+      {messages?.length ? (
+        <CardList firestoreMessages={messages} />
       ) : (
         <div style={{color: 'white', paddingTop: 20, paddingBottom: 20}}>{emptyCta}</div>
       )}
-      {messages?.length && userId !== undefined ? (
+      {messages?.length ? (
         <ButtonGroup variant="contained" color="primary">
           <Button disabled={currentPage === 0} onClick={prevPage}>
             Previous

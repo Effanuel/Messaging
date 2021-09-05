@@ -2,7 +2,6 @@ import React from 'react';
 import {useHistory, useParams, useLocation} from 'react-router-dom';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {CircularProgress, makeStyles, TextField} from '@material-ui/core';
-import {useFirestoreConnect} from 'react-redux-firebase';
 import {useReduxSelector} from 'redux/helpers/selectorHelper';
 
 const useStyles = makeStyles((theme) => ({
@@ -31,15 +30,6 @@ export const UserSearchBar = React.memo(() => {
   React.useEffect(() => {
     setValue('');
   }, [params]);
-
-  useFirestoreConnect({
-    collection: 'users',
-    where: [
-      ['username', '>=', value],
-      ['username', '<', value + 'z'],
-    ],
-    limit: 5,
-  });
 
   const onInputChange = React.useCallback((event: any, value: string) => {
     setValue(value ?? '');

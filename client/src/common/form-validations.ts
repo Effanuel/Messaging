@@ -11,10 +11,10 @@ type Validations = {
 };
 
 const validations: Validations = {
-  email: [
-    {validate: isRequired, errorMessage: 'Email is required.'},
-    {validate: isEmailValid, errorMessage: 'Invalid email address.'},
-  ],
+  //   email: [
+  //     {validate: isRequired, errorMessage: 'Email is required.'},
+  //     {validate: isEmailValid, errorMessage: 'Invalid email address.'},
+  //   ],
   password: [
     {validate: isRequired, errorMessage: 'Password is required.'},
     {validate: isLongEnough(6), errorMessage: 'Password has to be atleast 6 characters long.'},
@@ -27,12 +27,12 @@ const validations: Validations = {
 
 export interface Values {
   [key: string]: string;
-  email: string;
+  //   email: string;
   password: string;
   username: string;
 }
 
-export type Inputs = 'email' | 'password' | 'username';
+export type Inputs = 'password' | 'username';
 
 export function buildFormValidator(inputs: Inputs[]) {
   const selectedValidations: Validations = _.pick(inputs, validations);

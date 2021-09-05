@@ -1,36 +1,22 @@
 import {createAction, createReducer} from '@reduxjs/toolkit';
-import {ExtendedFirestoreInstance} from 'react-redux-firebase';
+import axios from 'axios';
 import {createThunk} from 'redux/helpers/thunks';
 import {AuthState, CLEAR_AUTH_STATE, SIGN_IN, SIGN_OUT, SIGN_UP} from './types';
 
-async function throwIfUsernameExists(firestore: () => ExtendedFirestoreInstance, username: string) {
-  const snapshot = await firestore().collection('users').where('username', '==', username).get();
-  const usernameExists = Boolean(snapshot.docs.map((doc) => doc.data())?.length);
-  if (usernameExists) throw {code: 'auth/username-exists'};
-}
-
-type SignUpUserPayload = {username: string; email: string; password: string};
-export const signUpUser = createThunk<SignUpUserPayload>(SIGN_UP, async (payload, firebase) => {
-  const {username, email, password} = payload;
-  const {auth, firestore} = firebase();
-
-  await throwIfUsernameExists(firestore, payload.username);
-
-  const authResponse = await auth().createUserWithEmailAndPassword(email, password);
-  await auth().signOut();
-  return await firestore()
-    .collection('users')
-    .doc(authResponse.user?.uid)
-    .set({username, email, isVerified: false, followerCount: 0, isAdmin: false});
+type SignUpUserPayload = {username: string; password: string};
+export const signUpUser = createThunk<SignUpUserPayload>(SIGN_UP, async ({username, password}) => {
+  await axios.post('/user/signup', {username, password});
 });
 
-type SignInUserPayload = {email: string; password: string};
-export const signInUser = createThunk<SignInUserPayload>(SIGN_IN, async ({email, password}, firebase) => {
-  await firebase().auth().signInWithEmailAndPassword(email, password);
+type SignInUserPayload = {username: string; password: string};
+export const signInUser = createThunk<SignInUserPayload>(SIGN_IN, async ({username, password}) => {
+  const response = await axios.post('/user/login', {username, password});
+  const {id} = response.data;
+  return {id, username};
 });
 
-export const signOutUser = createThunk(SIGN_OUT, async (payload, firebase) => {
-  await firebase().auth().signOut();
+export const signOutUser = createThunk<void>(SIGN_OUT, async () => {
+  await axios.post('/user/logout');
 });
 
 export const clearAuthState = createAction(CLEAR_AUTH_STATE);
@@ -39,6 +25,9 @@ const defaultState = {
   error: '',
   loading: false,
   signedUpSuccessfully: false,
+  authenticated: false,
+  username: '',
+  id: '',
 };
 
 export const authReducer = createReducer<AuthState>(defaultState, (builder) =>
@@ -57,7 +46,14 @@ export const authReducer = createReducer<AuthState>(defaultState, (builder) =>
     .addCase(signInUser.pending, () => {
       return {...defaultState, loading: true};
     })
-    .addCase(signInUser.fulfilled, () => defaultState)
+    .addCase(signInUser.fulfilled, (state, {payload}: any) => {
+      state.loading = false;
+      state.error = '';
+      state.signedUpSuccessfully = false;
+      state.authenticated = true;
+      state.username = payload.username;
+      state.id = payload.id;
+    })
     .addCase(signInUser.rejected, (state, {payload}) => {
       return {...defaultState, error: payload ?? 'error'};
     }),

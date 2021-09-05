@@ -10,11 +10,11 @@ export const UNFOLLOW_USER = 'message/UNFOLLOW_USER';
 export const CLEAR_MESSAGES = 'message/CLEAR_MESSAGES';
 
 export interface Message {
-  id: string;
+  _id: string;
   username: string;
   userId: string;
   text: string;
-  createdAt: {seconds: number; nanoseconds: number};
+  createdAt: string;
   isLiked: boolean;
   likes?: number;
 }

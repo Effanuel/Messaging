@@ -1,10 +1,11 @@
 import {useSelector, shallowEqual} from 'react-redux';
 import {AppState} from 'redux/models/state';
 import {Message, Profile} from 'redux/modules/message/types';
-import {isNextPageDisabledSelector, userLoggedInSelector} from 'redux/selectors';
+import {isNextPageDisabledSelector} from 'redux/selectors';
 
 export interface User {
   id: string;
+  _id: string;
   email: string;
   username: string;
   followerCount: number;
@@ -14,12 +15,10 @@ export interface User {
 type FirestoreUsers = {[userId: string]: User};
 
 interface Selectors {
-  isLoggedIn: ReturnType<typeof userLoggedInSelector>;
+  authenticated: boolean;
   isNextPageDisabled: ReturnType<typeof isNextPageDisabledSelector>;
   authUid: string;
   authDisplayName: string | null;
-  firebaseInitializing: boolean;
-  profile: any;
   loggedInUserId: string | undefined;
 
   firestoreMessages: Message[];
@@ -37,24 +36,20 @@ interface Selectors {
   userProfile: Profile;
 
   users: User[];
-
-  state: any;
 }
 
 const buildSelectors = (state: AppState): Selectors => {
-  const {firebase, auth, message, firestore, user} = state;
+  const {auth, message, user} = state;
   return {
-    isLoggedIn: userLoggedInSelector(state),
+    authenticated: auth.authenticated,
     isNextPageDisabled: isNextPageDisabledSelector(state),
-    authUid: firebase.auth.uid,
-    authDisplayName: firebase.auth.displayName,
-    firebaseInitializing: firebase.isInitializing,
-    profile: firebase.profile,
-    loggedInUserId: firebase.auth.uid,
+    authUid: '',
+    authDisplayName: '',
+    loggedInUserId: '', // firebase.auth.uid,
 
-    firestoreMessages: firestore?.ordered?.messages,
-    firestoreUsers: firestore?.data.users,
-    firestoreLoading: Boolean(Object.values(firestore?.status?.requesting)?.[0]),
+    firestoreMessages: [],
+    firestoreUsers: [] as any,
+    firestoreLoading: false,
 
     authLoading: auth.loading,
     authError: auth.error,
@@ -67,8 +62,6 @@ const buildSelectors = (state: AppState): Selectors => {
     userProfile: message.profile,
 
     users: user.users,
-
-    state: firebase,
   };
 };
 

@@ -1,10 +1,10 @@
 import React from 'react';
 import _ from 'lodash';
-import {useDispatch} from 'react-redux';
-import {useReduxSelector} from 'redux/helpers/selectorHelper';
+import {useDispatch, useSelector} from 'react-redux';
 import {clearMessages, createMessage} from 'redux/modules/message/messageModule';
 import {CardListContainer, Header, InputCard} from 'components';
 import {makeStyles} from '@material-ui/core';
+import {AppState} from 'redux/models/state';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -21,39 +21,32 @@ const Home = React.memo(() => {
 
   const [message, setMessage] = React.useState('');
 
-  const {profile, loggedInUserId, isLoggedIn} = useReduxSelector('profile', 'loggedInUserId', 'isLoggedIn');
+  const username = useSelector((state: AppState) => state.auth.username);
+  const authenticated = useSelector((state: AppState) => state.auth.authenticated);
+  const userId = useSelector((state: AppState) => state.auth.id);
 
   React.useEffect(() => {
-    if (!isLoggedIn) {
+    if (!authenticated) {
       dispatch(clearMessages());
     }
-  }, [dispatch, isLoggedIn]);
+  }, [dispatch, authenticated]);
 
   const postMessage = React.useCallback(() => {
-    if (loggedInUserId) {
-      dispatch(createMessage({text: message, username: profile.username, userId: loggedInUserId}));
-    }
+    dispatch(createMessage({text: message}));
     setMessage('');
-  }, [dispatch, message, profile, loggedInUserId]);
+  }, [dispatch, message]);
 
-  const handleTextChange = React.useCallback(({target: {value}}: any) => {
-    setMessage(value);
-  }, []);
+  const handleTextChange = React.useCallback(({target: {value}}: any) => setMessage(value), []);
 
-  const label = loggedInUserId === undefined ? 'Log in to post messages' : 'You haven`t posted any messages';
+  const label = authenticated ? 'Log in to post messages' : 'You haven`t posted any messages';
   return (
     <>
       <Header name="HOME" />
       <div className={classes.root}>
-        {isLoggedIn && (
-          <InputCard
-            onTextChange={handleTextChange}
-            onActionClick={postMessage}
-            username={profile.username}
-            value={message}
-          />
+        {authenticated && (
+          <InputCard onTextChange={handleTextChange} onActionClick={postMessage} username={username} value={message} />
         )}
-        <CardListContainer query="followedUsersMessages" userId={loggedInUserId ?? ''} emptyCta={label} />
+        <CardListContainer query="followedUsersMessages" emptyCta={label} userId={userId} />
       </div>
     </>
   );

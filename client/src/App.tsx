@@ -29,16 +29,16 @@ const useStyles = makeStyles((theme) => ({
 function App() {
   const classes = useStyles();
 
-  const {isLoggedIn, authLoading, profile} = useReduxSelector('isLoggedIn', 'authLoading', 'profile');
+  const {authenticated, authLoading} = useReduxSelector('authenticated', 'authLoading');
 
   return (
     <div className={classes.root}>
-      <Grid container justify="center">
+      <Grid container justifyContent="center">
         <Grid item xs={2}>
           <div className={classes.section}>
             <NavbarLogo />
           </div>
-          {profile?.isAdmin === true ? (
+          {true ? (
             <div className={classes.section}>
               <AdminPanelLogo />
             </div>
@@ -54,7 +54,7 @@ function App() {
           <div className={classes.test}>
             <UserSearchBar />
             <TagSearchBar />
-            {isLoggedIn ? <SignedInLinks /> : <SignedOutLinks />}
+            {authenticated ? <SignedInLinks /> : <SignedOutLinks />}
           </div>
         </Grid>
       </Grid>

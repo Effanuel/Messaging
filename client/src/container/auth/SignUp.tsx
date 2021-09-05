@@ -15,26 +15,15 @@ function SignUp() {
     dispatch(clearAuthState());
   }, [dispatch]);
 
-  const signUp = React.useCallback(
-    (values: Values) => {
-      dispatch(signUpUser(values));
-    },
-    [dispatch],
-  );
+  const signUp = React.useCallback((values: Values) => dispatch(signUpUser(values)), [dispatch]);
 
   if (authSignedUpSuccessfully) {
     return <Redirect to="/signin" />;
   }
 
   return (
-    <Form
-      inputValues={{username: '', email: '', password: ''}}
-      headerTitle={'Sign up'}
-      submitCta={'Sign up'}
-      onSubmit={signUp}
-    >
+    <Form inputValues={{username: '', password: ''}} headerTitle="Sign up" submitCta="Sign up" onSubmit={signUp}>
       <InputField name="username" label="Username" />
-      <InputField name="email" label="Email" />
       <InputField name="password" label="Password" type="password" />
     </Form>
   );

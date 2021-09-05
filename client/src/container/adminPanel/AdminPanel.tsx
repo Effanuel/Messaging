@@ -12,20 +12,12 @@ function AdminPanel() {
 
   const [searchFilter, setSearchFilter] = React.useState('');
 
-  const {users, profile} = useReduxSelector('users', 'profile');
+  const {users} = useReduxSelector('users');
 
-  useDebouncedEffect(
-    () => {
-      dispatch(getUsers({searchFilter}));
-    },
-    300,
-    [dispatch, searchFilter],
-  );
+  useDebouncedEffect(() => void dispatch(getUsers({searchFilter})), 300, [dispatch, searchFilter]);
 
   const toggleVerify = React.useCallback(
-    (userId: string, isVerified: boolean) => {
-      dispatch(verifyUser({userId, isVerified}));
-    },
+    (userId: string, isVerified: boolean) => dispatch(verifyUser({userId, isVerified})),
     [dispatch],
   );
 
@@ -33,7 +25,7 @@ function AdminPanel() {
     setSearchFilter(value ?? '');
   }, []);
 
-  if (profile?.isAuthAdmin !== undefined && profile?.isAdmin === false) {
+  if (false) {
     return <Redirect to="/" />;
   }
 
@@ -51,8 +43,8 @@ function AdminPanel() {
         onChange={updateSearchFilter}
       />
       {!!users.length ? (
-        users.map(({username, isVerified, id}) => (
-          <UserCard key={id} id={id} name={username} isVerified={isVerified} toggleVerify={toggleVerify} />
+        users.map(({username, isVerified, _id}) => (
+          <UserCard key={_id} id={_id} name={username} isVerified={isVerified} toggleVerify={toggleVerify} />
         ))
       ) : (
         <div style={{color: 'white'}}>No users found.</div>
