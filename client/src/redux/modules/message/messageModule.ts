@@ -33,8 +33,6 @@ export const createMessage = createThunk<CreateMessageProps>(CREATE_MESSAGE, asy
   const response = await axios.post('/message/create', {text: payload.text});
   const {createdAt, likes, text, userId, username} = response.data.message;
   return {createdAt, likes, text, userId, username} as Message;
-  //   const tags = (payload.text.match(/#\w+/g) ?? []).map((tag) => tag.replace(/#/gm, ''));
-  //   const message = {...payload, createdAt: new Date(), tags};
 });
 
 export const followUser = createThunk<{userId: string}>(FOLLOW_USER, async ({userId}) => {
@@ -59,82 +57,26 @@ type GetMessagesProps = {
 export const getMessages = createAsyncThunk<any, GetMessagesProps, ThunkApiConfig>(
   GET_MESSAGES,
   async ({type, userId, query, tagNames}, {rejectWithValue}) => {
-    // const firestore = firebase().firestore();
-    // const likesRef = firestore.collection('likes');
-    // const getLikedPostsIds = async (messageIds: string[]): Promise<string[]> => {
-    //   const snapshot = await likesRef
-    //     .where('postId', 'in', messageIds)
-    //     .where('userId', '==', getState().firebase.auth.uid)
-    //     .get();
-    //   return snapshot.docs?.map((doc) => doc.data().postId ?? '');
-    // };
-    // const gatherMessages = async (messagesSnapshot: any) => {
-    //   const messagesData = messagesSnapshot.docs?.map((doc: any) => ({...doc.data(), id: doc.id})) ?? [];
-    //   const messageIds = messagesData.map((message: any) => message.id);
-    //   const likes = !!getState().firebase.auth.uid ? await getLikedPostsIds(messageIds) : [];
-    //   return messagesData.map((message: any) => ({...message, isLiked: likes.includes(message.id)}));
-    // };
-    // const gatherFollows = async (): Promise<string[]> => {
-    //   const followerId = getState().firebase.auth.uid;
-    //   const followsSnap = await firestore.collection('follows').where('followerId', '==', followerId).get();
-    //   const followsData = followsSnap.docs?.map((doc) => doc.data()) ?? [];
-    //   return followsData.map((follow) => follow.userId);
-    // };
-    // async function getMessagesOfFollowedUsers() {
-    //   const followedUserIds = await gatherFollows();
-    //   return firestore
-    //     .collection('messages')
-    //     .orderBy('createdAt', 'desc')
-    //     .where('userId', 'in', [getState().firebase.auth.uid, ...followedUserIds.slice(0, 9)]);
-    // }
-    // function getMessagesByTag() {
-    //   return firestore
-    //     .collection('messages')
-    //     .orderBy('createdAt', 'desc')
-    //     .where('tags', 'array-contains-any', tagNames);
-    // }
     try {
-      //   const messagesRef =
-      //     query === 'userMessages'
-      //       ? getMessages()
-      //       : query === 'messagesByTag'
-      //       ? getMessagesByTag()
-      //       : await getMessagesOfFollowedUsers();
       switch (type) {
         case 'initial': {
           if (query === 'userMessages') {
             const result = await axios.post('/message/userMessages', {userId});
             return {messages: result.data.messages};
           }
-          const result = await axios.get('/message/followerMessages');
-          return {messages: result.data.messages};
+          if (query === 'followedUsersMessages') {
+            const result = await axios.get('/message/followerMessages');
+            return {messages: result.data.messages};
+          }
+          if (query === 'messagesByTag') {
+            const result = await axios.post('/message/messagesByTags', {tagNames});
+            return {messages: result.data.messages};
+          }
         }
-        // case 'forward': {
-        //   const {messages} = getState().message;
-        //   const lastMessage = messages?.[messages.length - 1];
-        //   if (lastMessage) {
-        //     const snapshot = await messagesRef.limit(PAGE_LIMIT).startAfter(lastMessage?.createdAt).get();
-        //     const messages = await gatherMessages(snapshot);
-        //     return {messages, userId, movePage: 1};
-        //   }
-        //   return {messages: []};
-        // }
-        // case 'backward': {
-        //   const {messages} = getState().message;
-        //   const firstMessage = messages?.[0];
-        //   if (firstMessage) {
-        //     const snapshot = await messagesRef.endBefore(firstMessage?.createdAt).limitToLast(PAGE_LIMIT).get();
-        //     const messages = await gatherMessages(snapshot);
-        //     return {messages, userId, movePage: -1};
-        //   }
-        //   return {messages: []};
-        // }
       }
       return undefined;
     } catch (error: any) {
-      console.log('ERRROR3323', error.response.data.error);
       return rejectWithValue(error.response?.data.error);
-      //   return {messages: []};
     }
   },
 );

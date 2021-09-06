@@ -5,6 +5,7 @@ const MessageSchema = new Schema({
   userId: {type: String, required: true},
   username: {type: String, required: true},
   likes: {type: Number, required: true, default: 0, min: 0},
+  tags: [{type: String}],
   createdAt: {type: Date, required: true, default: Date.now},
 });
 
@@ -14,6 +15,7 @@ export interface IMessageSchema {
   userId: string;
   username: string;
   createdAt: Date;
+  tags: string[];
 }
 
 export const Message = model<IMessageSchema>('Message', MessageSchema);

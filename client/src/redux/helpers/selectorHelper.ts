@@ -5,11 +5,10 @@ import {isNextPageDisabledSelector} from 'redux/selectors';
 
 export interface User {
   id: string;
-  _id: string;
-  email: string;
   username: string;
   followerCount: number;
   isVerified: boolean;
+  isAdmin: boolean;
 }
 
 type FirestoreUsers = {[userId: string]: User};

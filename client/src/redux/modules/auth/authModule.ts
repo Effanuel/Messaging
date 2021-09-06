@@ -11,8 +11,8 @@ export const signUpUser = createThunk<SignUpUserPayload>(SIGN_UP, async ({userna
 type SignInUserPayload = {username: string; password: string};
 export const signInUser = createThunk<SignInUserPayload>(SIGN_IN, async ({username, password}) => {
   const response = await axios.post('/user/login', {username, password});
-  const {id} = response.data;
-  return {id, username};
+  const {id, isAdmin} = response.data;
+  return {id, username, isAdmin};
 });
 
 export const signOutUser = createThunk<void>(SIGN_OUT, async () => {
@@ -28,6 +28,7 @@ const defaultState = {
   authenticated: false,
   username: '',
   id: '',
+  isAdmin: false,
 };
 
 export const authReducer = createReducer<AuthState>(defaultState, (builder) =>
@@ -53,6 +54,7 @@ export const authReducer = createReducer<AuthState>(defaultState, (builder) =>
       state.authenticated = true;
       state.username = payload.username;
       state.id = payload.id;
+      state.isAdmin = payload.isAdmin;
     })
     .addCase(signInUser.rejected, (state, {payload}) => {
       return {...defaultState, error: payload ?? 'error'};

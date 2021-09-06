@@ -1,10 +1,11 @@
 import React from 'react';
+import {useSelector} from 'react-redux';
 import {makeStyles} from '@material-ui/core/styles';
 import {Grid, LinearProgress} from '@material-ui/core';
-import {useReduxSelector} from 'redux/helpers/selectorHelper';
 import {AdminPanelLogo, UserSearchBar, TagSearchBar, SignedInLinks, SignedOutLinks} from 'components';
 import Content from 'container/Content';
 import {NavbarLogo} from 'components/Navbar/NavbarLogo';
+import {AppState} from 'redux/models/state';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,7 +30,9 @@ const useStyles = makeStyles((theme) => ({
 function App() {
   const classes = useStyles();
 
-  const {authenticated, authLoading} = useReduxSelector('authenticated', 'authLoading');
+  const authenticated = useSelector((state: AppState) => state.auth.authenticated);
+  const authLoading = useSelector((state: AppState) => state.auth.loading);
+  const isAdmin = useSelector((state: AppState) => state.auth.isAdmin);
 
   return (
     <div className={classes.root}>
@@ -38,7 +41,7 @@ function App() {
           <div className={classes.section}>
             <NavbarLogo />
           </div>
-          {true ? (
+          {authenticated && isAdmin ? (
             <div className={classes.section}>
               <AdminPanelLogo />
             </div>

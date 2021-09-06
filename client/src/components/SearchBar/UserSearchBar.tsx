@@ -45,7 +45,7 @@ export const UserSearchBar = React.memo(() => {
     () =>
       !!users?.length
         ? users
-            .map((user) => ({id: user._id, name: user.username})) //
+            .map((user) => ({id: user.id, name: user.username})) //
             .filter((user) => user.id !== userId)
         : [],
     [users, userId],

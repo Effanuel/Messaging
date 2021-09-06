@@ -1,10 +1,10 @@
 import {TextField} from '@material-ui/core';
 import {Header, UserCard} from 'components';
 import React from 'react';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 import {useDebouncedEffect} from 'redux/helpers/hooks';
-import {useReduxSelector} from 'redux/helpers/selectorHelper';
+import {AppState} from 'redux/models/state';
 import {getUsers, verifyUser} from 'redux/modules/user/userModule';
 
 function AdminPanel() {
@@ -12,7 +12,9 @@ function AdminPanel() {
 
   const [searchFilter, setSearchFilter] = React.useState('');
 
-  const {users} = useReduxSelector('users');
+  const users = useSelector((state: AppState) => state.user.users);
+  const authenticated = useSelector((state: AppState) => state.auth.authenticated);
+  const isAdmin = useSelector((state: AppState) => state.auth.isAdmin);
 
   useDebouncedEffect(() => void dispatch(getUsers({searchFilter})), 300, [dispatch, searchFilter]);
 
@@ -25,7 +27,7 @@ function AdminPanel() {
     setSearchFilter(value ?? '');
   }, []);
 
-  if (false) {
+  if (!authenticated || !isAdmin) {
     return <Redirect to="/" />;
   }
 
@@ -43,8 +45,8 @@ function AdminPanel() {
         onChange={updateSearchFilter}
       />
       {!!users.length ? (
-        users.map(({username, isVerified, _id}) => (
-          <UserCard key={_id} id={_id} name={username} isVerified={isVerified} toggleVerify={toggleVerify} />
+        users.map(({username, isVerified, id}) => (
+          <UserCard key={id} id={id} name={username} isVerified={isVerified} toggleVerify={toggleVerify} />
         ))
       ) : (
         <div style={{color: 'white'}}>No users found.</div>

@@ -11,4 +11,5 @@ export interface AuthState {
   authenticated: boolean;
   username: string;
   id: string;
+  isAdmin: boolean;
 }
