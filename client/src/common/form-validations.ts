@@ -2,8 +2,6 @@ import _ from 'lodash/fp';
 
 const isRequired = (value: string): boolean => !!value;
 
-const isEmailValid = (value: string) => /^[A-Z0-9._%+-]+@[A-Z0-9]+\.[A-Z]{2,}$/i.test(value);
-
 const isLongEnough = (length: number) => (value: string) => value.length >= length;
 
 type Validations = {

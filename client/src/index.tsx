@@ -1,9 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Provider, useSelector} from 'react-redux';
+import {Provider} from 'react-redux';
 import {BrowserRouter} from 'react-router-dom';
 import {createTheme, ThemeProvider} from '@material-ui/core/styles';
-import {AppState} from 'redux/models/state';
 import App from './App';
 import {createStore} from 'redux/store/store';
 import * as serviceWorker from './serviceWorker';
