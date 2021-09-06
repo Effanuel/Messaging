@@ -1,6 +1,7 @@
 import {RequestHandler, Router} from 'express';
 import {model, Schema, Document} from 'mongoose';
 import {auth, getAuthenticatedUser} from '../middlewares/auth';
+import {Follow} from '../models/follow-model';
 import {Like} from '../models/like-model';
 import {Message, IMessageSchema} from '../models/message-model';
 import {IUserSchema, User} from '../models/user-model';
@@ -49,8 +50,10 @@ export function MessageRouter() {
       auth,
       asyncHandler(async (req, res) => {
         const {id} = req.user;
-        const messages = await findLikedMessages([id], id);
-        console.log(messages, 'mmmmmmmmmmmmmmm');
+        const follows = await Follow.find({followerId: id}).lean();
+
+        const followsIds = follows.map((follow) => follow.userId);
+        const messages = await findLikedMessages([id, ...followsIds], id);
 
         return res.status(200).json({messages});
       }),

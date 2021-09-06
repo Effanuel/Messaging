@@ -6,4 +6,5 @@ export const VERIFY_USER = 'user/VERIFY_USER';
 
 export interface UserState {
   users: User[];
+  loading: boolean;
 }

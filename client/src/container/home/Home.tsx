@@ -38,7 +38,7 @@ const Home = React.memo(() => {
 
   const handleTextChange = React.useCallback(({target: {value}}: any) => setMessage(value), []);
 
-  const label = authenticated ? 'Log in to post messages' : 'You haven`t posted any messages';
+  const label = !authenticated ? 'Log in to post messages' : 'You haven`t posted any messages';
   return (
     <>
       <Header name="HOME" />

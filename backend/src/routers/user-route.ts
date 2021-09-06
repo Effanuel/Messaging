@@ -3,8 +3,15 @@ import jwt from 'jsonwebtoken';
 import {auth, getAuthenticatedUser} from '../middlewares/auth';
 import {Follow} from '../models/follow-model';
 import {Message} from '../models/message-model';
-import {User} from '../models/user-model';
+import {IUserSchema, User} from '../models/user-model';
 import {asyncHandler} from '../utils';
+
+const toUser = (user: IUserSchema) => ({
+  username: user.username,
+  isVerified: user.isVerified,
+  followerCount: user.followerCount,
+  isAdmin: user.isAdmin,
+});
 
 export function UserRouter() {
   return Router()
@@ -41,15 +48,18 @@ export function UserRouter() {
         return res.status(200).json({success: true, id: user.id, username: user.username});
       }),
     )
-    .post('/logout', auth, async (req: any, res) => {
-      res.cookie('jwt', '', {maxAge: 1});
-      try {
+    .post(
+      '/logout',
+      auth,
+      asyncHandler(async (req, res) => {
+        const {id} = req.user;
+
+        await User.findByIdAndUpdate(id, {token: ''});
+
+        res.cookie('jwt', '', {maxAge: 1});
         res.status(200).send({success: true});
-      } catch (e) {
-        console.log(e);
-        res.status(500).send({success: false});
-      }
-    })
+      }),
+    )
     .post(
       '/getUsers',
       //   auth,
@@ -58,7 +68,7 @@ export function UserRouter() {
         const users = await User.find({username: {$gte: searchFilter, $lt: searchFilter + 'z'}})
           .limit(5)
           .lean();
-        return res.status(200).json({users});
+        return res.status(200).json({users: users.map(toUser)});
       }),
     )
     .post(
@@ -80,15 +90,7 @@ export function UserRouter() {
           throw new Error('User not found');
         }
 
-        return res.status(200).json({
-          profile: {
-            username: user.username,
-            isVerified: user.isVerified,
-            followerCount: user.followerCount,
-            isAdmin: user.isAdmin,
-            isFollowing: Boolean(follow),
-          },
-        });
+        return res.status(200).json({profile: {...toUser(user), isFollowing: Boolean(follow)}});
       }),
     )
     .post(

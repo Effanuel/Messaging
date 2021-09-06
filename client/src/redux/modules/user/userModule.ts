@@ -19,15 +19,20 @@ export const getUsers = createThunk<GetUsersProps>(GET_USERS, async ({searchFilt
 
 const defaultState = {
   users: [],
+  loading: false,
 };
 
 export const userReducer = createReducer<UserState>(defaultState, (builder) =>
   builder
     .addCase(getUsers.pending, (state) => {
-      return {...state};
+      state.loading = true;
     })
     .addCase(getUsers.fulfilled, (state, {payload}) => {
-      return {...state, users: payload};
+      state.loading = false;
+      state.users = payload;
+    })
+    .addCase(getUsers.rejected, (state) => {
+      state.loading = false;
     })
     .addCase(verifyUser.fulfilled, (state, {payload: {userId, isVerified}}) => {
       const userIndex = state.users.findIndex((user) => user.id === userId);

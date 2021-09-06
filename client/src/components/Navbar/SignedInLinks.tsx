@@ -2,7 +2,6 @@ import React from 'react';
 import {makeStyles, MenuItem} from '@material-ui/core';
 import {useDispatch, useSelector} from 'react-redux';
 import {NavLink} from 'react-router-dom';
-import {useReduxSelector} from 'redux/helpers/selectorHelper';
 import {signOutUser} from 'redux/modules/auth/authModule';
 import {AppState} from 'redux/models/state';
 
@@ -18,7 +17,7 @@ function SignedInLinks() {
   const authenticated = useSelector((state: AppState) => state.auth.authenticated);
 
   const signOut = React.useCallback(() => {
-    dispatch(signOutUser(''));
+    dispatch(signOutUser());
   }, [dispatch]);
 
   return (
