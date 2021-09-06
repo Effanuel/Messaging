@@ -4,6 +4,7 @@ import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import Avatar from '@material-ui/core/Avatar';
 import {Switch} from '@material-ui/core';
+import {useHistory} from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -21,19 +22,17 @@ interface Props {
 
 export function UserCard({id, name, isVerified, toggleVerify}: Props) {
   const classes = useStyles();
+  const history = useHistory();
 
-  const toggle = React.useCallback(
-    (e: any, isVerified: boolean) => {
-      toggleVerify(id, isVerified);
-    },
-    [toggleVerify, id],
-  );
+  const toggle = React.useCallback((e: any, isVerified: boolean) => toggleVerify(id, isVerified), [toggleVerify, id]);
+
+  const goToUserProfile = React.useCallback(() => history.push(`/user/${name}/${id}`), [history, name, id]);
 
   return (
     <Card className={classes.root}>
       <CardHeader
         avatar={
-          <Avatar aria-label="recipe" className={classes.avatar}>
+          <Avatar aria-label="recipe" className={classes.avatar} onClick={goToUserProfile}>
             {name[0] ?? 'T'}
           </Avatar>
         }

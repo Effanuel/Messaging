@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 interface MessageCardProps {
   text?: string;
   username: string;
-  id?: string;
+  _id?: string;
   createdAt: string;
   isLiked?: boolean;
   likes?: number;
@@ -31,7 +31,7 @@ interface MessageCardProps {
 }
 
 export const MessageCard = React.memo((props: MessageCardProps) => {
-  const {username, createdAt, text, onLikePost, onUnlikePost, id, isLiked, likes, userId} = props;
+  const {username, createdAt, text, onLikePost, onUnlikePost, _id: id, isLiked, likes, userId} = props;
   const history = useHistory();
   const classes = useStyles();
 

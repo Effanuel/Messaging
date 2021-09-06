@@ -1,10 +1,10 @@
 import {TextField} from '@material-ui/core';
 import {Header, UserCard} from 'components';
 import React from 'react';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 import {useDebouncedEffect} from 'redux/helpers/hooks';
-import {useReduxSelector} from 'redux/helpers/selectorHelper';
+import {AppState} from 'redux/models/state';
 import {getUsers, verifyUser} from 'redux/modules/user/userModule';
 
 function AdminPanel() {
@@ -12,20 +12,14 @@ function AdminPanel() {
 
   const [searchFilter, setSearchFilter] = React.useState('');
 
-  const {users, profile} = useReduxSelector('users', 'profile');
+  const users = useSelector((state: AppState) => state.user.users);
+  const authenticated = useSelector((state: AppState) => state.auth.authenticated);
+  const isAdmin = useSelector((state: AppState) => state.auth.isAdmin);
 
-  useDebouncedEffect(
-    () => {
-      dispatch(getUsers({searchFilter}));
-    },
-    300,
-    [dispatch, searchFilter],
-  );
+  useDebouncedEffect(() => void dispatch(getUsers({searchFilter})), 300, [dispatch, searchFilter]);
 
   const toggleVerify = React.useCallback(
-    (userId: string, isVerified: boolean) => {
-      dispatch(verifyUser({userId, isVerified}));
-    },
+    (userId: string, isVerified: boolean) => dispatch(verifyUser({userId, isVerified})),
     [dispatch],
   );
 
@@ -33,7 +27,7 @@ function AdminPanel() {
     setSearchFilter(value ?? '');
   }, []);
 
-  if (profile?.isAuthAdmin !== undefined && profile?.isAdmin === false) {
+  if (!authenticated || !isAdmin) {
     return <Redirect to="/" />;
   }
 

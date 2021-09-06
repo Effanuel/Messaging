@@ -2,7 +2,7 @@ import {CardListContainer, Header} from 'components';
 import React from 'react';
 import {RouteComponentProps} from 'react-router-dom';
 
-function TagSearch({match}: RouteComponentProps<{tag: string}>) {
+export default function TagSearch({match}: RouteComponentProps<{tag: string}>) {
   const {tag} = match.params;
 
   const uniqueTags = [...new Set(tag.split(','))];
@@ -13,11 +13,9 @@ function TagSearch({match}: RouteComponentProps<{tag: string}>) {
       <CardListContainer
         tagNames={uniqueTags}
         query="messagesByTag"
-        userId={'*'}
         emptyCta="No messages found by this tag."
+        userId={'*'}
       />
     </>
   );
 }
-
-export default TagSearch;

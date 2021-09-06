@@ -1,47 +1,38 @@
-import {createAsyncThunk, createReducer} from '@reduxjs/toolkit';
-import {createThunk, errorHandler, ThunkApiConfig} from 'redux/helpers/thunks';
+import {createReducer} from '@reduxjs/toolkit';
+import axios from 'axios';
+import {createThunk} from 'redux/helpers/thunks';
 import {GET_USERS, UserState, VERIFY_USER} from './types';
 
 export const verifyUser = createThunk<{userId: string; isVerified: boolean}>(
   VERIFY_USER,
-  async ({userId, isVerified}, firebase) => {
-    const firestore = firebase().firestore();
-    await firestore.collection('users').doc(userId).update({isVerified});
+  async ({userId, isVerified}) => {
+    await axios.post('/user/verify', {userId, isVerified});
     return {userId, isVerified};
   },
 );
 
 type GetUsersProps = {searchFilter: string};
-export const getUsers = createAsyncThunk<any, GetUsersProps, ThunkApiConfig>(
-  GET_USERS,
-  async ({searchFilter}, {rejectWithValue, extra: firebase}) => {
-    const firestore = firebase().firestore();
-    try {
-      const snapshot = await firestore
-        .collection('users')
-        .where('username', '>=', searchFilter)
-        .where('username', '<', `${searchFilter}z`)
-        .limit(20)
-        .get();
-      return snapshot.docs?.map((doc) => ({...doc.data(), id: doc.id}));
-    } catch (err) {
-      const errorMessage: string = errorHandler?.[err?.code] ?? 'error';
-      return rejectWithValue(errorMessage);
-    }
-  },
-);
+export const getUsers = createThunk<GetUsersProps>(GET_USERS, async ({searchFilter}) => {
+  const response = await axios.post('/user/getUsers', {searchFilter});
+  return response.data.users;
+});
 
 const defaultState = {
   users: [],
+  loading: false,
 };
 
 export const userReducer = createReducer<UserState>(defaultState, (builder) =>
   builder
     .addCase(getUsers.pending, (state) => {
-      return {...state};
+      state.loading = true;
     })
     .addCase(getUsers.fulfilled, (state, {payload}) => {
-      return {...state, users: payload};
+      state.loading = false;
+      state.users = payload;
+    })
+    .addCase(getUsers.rejected, (state) => {
+      state.loading = false;
     })
     .addCase(verifyUser.fulfilled, (state, {payload: {userId, isVerified}}) => {
       const userIndex = state.users.findIndex((user) => user.id === userId);

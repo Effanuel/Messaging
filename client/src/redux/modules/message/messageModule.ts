@@ -1,6 +1,6 @@
 import {createAction, createAsyncThunk, createReducer} from '@reduxjs/toolkit';
+import axios from 'axios';
 import {createThunk, ThunkApiConfig} from 'redux/helpers/thunks';
-import {atomicDecrement, atomicIncrement} from 'redux/store/firebaseSetup';
 import {
   CLEAR_MESSAGES,
   CREATE_MESSAGE,
@@ -8,6 +8,7 @@ import {
   GET_MESSAGES,
   GET_PROFILE,
   LIKE_MESSAGE,
+  Message,
   MessageState,
   UNFOLLOW_USER,
   UNLIKE_MESSAGE,
@@ -17,60 +18,34 @@ export const PAGE_LIMIT = 5;
 
 export const clearMessages = createAction(CLEAR_MESSAGES);
 
-export const likeMessage = createThunk<{postId: string}>(LIKE_MESSAGE, async ({postId}, firebase, getState) => {
-  await firebase().firestore().collection('likes').add({userId: getState().firebase.auth.uid, postId});
-  await firebase().firestore().collection('messages').doc(postId).update({likes: atomicIncrement});
-  return postId;
+export const likeMessage = createThunk<{messageId: string}>(LIKE_MESSAGE, async ({messageId}) => {
+  await axios.post('/message/like', {messageId});
+  return messageId;
 });
 
-export const unlikeMessage = createThunk<{postId: string}>(UNLIKE_MESSAGE, async ({postId}, firebase, getState) => {
-  const snapshot = await firebase()
-    .firestore()
-    .collection('likes')
-    .where('postId', '==', postId)
-    .where('userId', '==', getState().firebase.auth.uid)
-    .get();
-  await firebase().firestore().collection('messages').doc(postId).update({likes: atomicDecrement});
-
-  snapshot.docs[0].ref.delete();
-  return postId;
+export const unlikeMessage = createThunk<{messageId: string}>(UNLIKE_MESSAGE, async ({messageId}) => {
+  await axios.post('/message/unlike', {messageId});
+  return messageId;
 });
 
-type CreateMessageProps = {text: string; username: string; userId: string};
-export const createMessage = createThunk<CreateMessageProps>(CREATE_MESSAGE, async (payload, firebase) => {
-  const tags = (payload.text.match(/#\w+/g) ?? []).map((tag) => tag.replace(/#/gm, ''));
-  const message = {...payload, createdAt: new Date(), tags};
-  const {id} = await firebase().firestore().collection('messages').add(message);
-  return {...message, createdAt: {seconds: new Date().getTime() / 1000}, id, likes: 0};
+type CreateMessageProps = {text: string};
+export const createMessage = createThunk<CreateMessageProps>(CREATE_MESSAGE, async (payload) => {
+  const response = await axios.post('/message/create', {text: payload.text});
+  const {createdAt, likes, text, userId, username} = response.data.message;
+  return {createdAt, likes, text, userId, username} as Message;
 });
 
-export const followUser = createThunk<{userId: string}>(FOLLOW_USER, async ({userId}, firebase, getState) => {
-  const firestore = firebase().firestore();
-  await firestore.collection('follows').add({userId, followerId: getState().firebase.auth.uid});
-  await firestore.collection('users').doc(userId).update({followerCount: atomicIncrement});
+export const followUser = createThunk<{userId: string}>(FOLLOW_USER, async ({userId}) => {
+  await axios.post('/user/follow', {userId});
 });
 
-export const unfollowUser = createThunk<{userId: string}>(UNFOLLOW_USER, async ({userId}, firebase, getState) => {
-  const firestore = firebase().firestore();
-  const snapshot = await firestore
-    .collection('follows')
-    .where('userId', '==', userId)
-    .where('followerId', '==', getState().firebase.auth.uid)
-    .get();
-  snapshot.docs[0].ref.delete();
-  await firestore.collection('users').doc(userId).update({followerCount: atomicDecrement});
+export const unfollowUser = createThunk<{userId: string}>(UNFOLLOW_USER, async ({userId}) => {
+  await axios.post('/user/unfollow', {userId});
 });
 
-export const getProfile = createThunk<{userId: string}>(GET_PROFILE, async ({userId}, firebase, getState) => {
-  const firestore = firebase().firestore();
-  const {uid} = getState().firebase.auth;
-
-  const followsSnapshot = uid
-    ? await firestore.collection('follows').where('userId', '==', userId).where('followerId', '==', uid).get()
-    : {empty: true};
-  const userProfile = (await firestore.collection('users').doc(userId).get()).data();
-
-  return {...userProfile, isFollowing: !followsSnapshot.empty};
+export const getProfile = createThunk<{userId: string}>(GET_PROFILE, async (payload) => {
+  const response = await axios.post('/user/getProfile', {userId: payload.userId});
+  return response.data.profile;
 });
 
 type GetMessagesProps = {
@@ -81,89 +56,27 @@ type GetMessagesProps = {
 };
 export const getMessages = createAsyncThunk<any, GetMessagesProps, ThunkApiConfig>(
   GET_MESSAGES,
-  async ({type, userId, query, tagNames}, {extra: firebase, getState}) => {
-    const firestore = firebase().firestore();
-    const likesRef = firestore.collection('likes');
-
-    const getLikedPostsIds = async (messageIds: string[]): Promise<string[]> => {
-      const snapshot = await likesRef
-        .where('postId', 'in', messageIds)
-        .where('userId', '==', getState().firebase.auth.uid)
-        .get();
-      return snapshot.docs?.map((doc) => doc.data().postId ?? '');
-    };
-
-    const gatherMessages = async (messagesSnapshot: any) => {
-      const messagesData = messagesSnapshot.docs?.map((doc: any) => ({...doc.data(), id: doc.id})) ?? [];
-      const messageIds = messagesData.map((message: any) => message.id);
-
-      const likes = !!getState().firebase.auth.uid ? await getLikedPostsIds(messageIds) : [];
-      return messagesData.map((message: any) => ({...message, isLiked: likes.includes(message.id)}));
-    };
-
-    const gatherFollows = async (): Promise<string[]> => {
-      const followerId = getState().firebase.auth.uid;
-      const followsSnap = await firestore.collection('follows').where('followerId', '==', followerId).get();
-      const followsData = followsSnap.docs?.map((doc) => doc.data()) ?? [];
-      return followsData.map((follow) => follow.userId);
-    };
-
-    function getMessages() {
-      return firestore.collection('messages').orderBy('createdAt', 'desc').where('userId', '==', userId);
-    }
-
-    async function getMessagesOfFollowedUsers() {
-      const followedUserIds = await gatherFollows();
-      return firestore
-        .collection('messages')
-        .orderBy('createdAt', 'desc')
-        .where('userId', 'in', [getState().firebase.auth.uid, ...followedUserIds.slice(0, 9)]);
-    }
-
-    function getMessagesByTag() {
-      return firestore
-        .collection('messages')
-        .orderBy('createdAt', 'desc')
-        .where('tags', 'array-contains-any', tagNames);
-    }
-
+  async ({type, userId, query, tagNames}, {rejectWithValue}) => {
     try {
-      const messagesRef =
-        query === 'userMessages'
-          ? getMessages()
-          : query === 'messagesByTag'
-          ? getMessagesByTag()
-          : await getMessagesOfFollowedUsers();
-
       switch (type) {
         case 'initial': {
-          const snapshot = await messagesRef.limit(PAGE_LIMIT).get();
-          const messages = await gatherMessages(snapshot);
-          return {messages, userId};
-        }
-        case 'forward': {
-          const {messages} = getState().message;
-          const lastMessage = messages?.[messages.length - 1];
-          if (lastMessage) {
-            const snapshot = await messagesRef.limit(PAGE_LIMIT).startAfter(lastMessage?.createdAt).get();
-            const messages = await gatherMessages(snapshot);
-            return {messages, userId, movePage: 1};
+          if (query === 'userMessages') {
+            const result = await axios.post('/message/userMessages', {userId});
+            return {messages: result.data.messages};
           }
-          return {messages: []};
-        }
-        case 'backward': {
-          const {messages} = getState().message;
-          const firstMessage = messages?.[0];
-          if (firstMessage) {
-            const snapshot = await messagesRef.endBefore(firstMessage?.createdAt).limitToLast(PAGE_LIMIT).get();
-            const messages = await gatherMessages(snapshot);
-            return {messages, userId, movePage: -1};
+          if (query === 'followedUsersMessages') {
+            const result = await axios.get('/message/followerMessages');
+            return {messages: result.data.messages};
           }
-          return {messages: []};
+          if (query === 'messagesByTag') {
+            const result = await axios.post('/message/messagesByTags', {tagNames});
+            return {messages: result.data.messages};
+          }
         }
       }
-    } catch (err) {
-      return {messages: []};
+      return undefined;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data.error);
     }
   },
 );
@@ -183,25 +96,32 @@ export const messageReducer = createReducer<MessageState>(defaultState, (builder
       return {...state, loading: true, error: ''};
     })
     .addCase(createMessage.fulfilled, (state, {payload}) => {
-      return {...state, messages: [payload, ...state.messages]};
+      return {...state, loading: false, messages: [payload, ...state.messages]};
     })
     .addCase(createMessage.rejected, (state, {payload}) => {
-      return {...state, loading: true, error: payload ?? 'Error'};
+      return {...state, loading: false, error: payload ?? 'Error'};
     })
     .addCase(getMessages.pending, (state) => {
       return {...state, loading: true, error: ''};
     })
     .addCase(getMessages.fulfilled, (state, {payload: {userId, messages, movePage = 0, likes}}) => {
-      if (state.userId !== userId || state.userId === '') {
-        return {...state, messages, likes, userId, loading: false, error: '', currentPage: 0};
-      } else {
-        return messages.length == 0
-          ? {...state, messages: [], loading: false, error: ''}
-          : {...state, messages, likes, userId, currentPage: state.currentPage + movePage};
-      }
+      state.messages = messages;
+      state.loading = false;
+      state.error = '';
+      //   if (state.userId !== userId || state.userId === '') {
+      //     return {...state, messages, likes, userId, loading: false, error: '', currentPage: 0};
+      //   } else {
+      // return messages.length === 0
+      //   ? {...state, messages: [], loading: false, error: ''}
+      //   : {...state, messages, likes, userId, currentPage: state.currentPage + movePage};
+      //   }
+    })
+    .addCase(likeMessage.pending, (state) => {
+      state.loading = true;
+      state.error = '';
     })
     .addCase(likeMessage.fulfilled, (state, {payload}) => {
-      const messageIndex = state.messages.findIndex((message) => message.id === payload);
+      const messageIndex = state.messages.findIndex((message) => message._id === payload);
       const updatedMessage = {
         ...state.messages[messageIndex],
         isLiked: true,
@@ -213,10 +133,10 @@ export const messageReducer = createReducer<MessageState>(defaultState, (builder
         ...state.messages.slice(messageIndex + 1),
       ];
 
-      return {...state, loading: true, error: '', messages: updatedMessages};
+      return {...state, loading: false, error: '', messages: updatedMessages};
     })
     .addCase(unlikeMessage.fulfilled, (state, {payload}) => {
-      const messageIndex = state.messages.findIndex((message) => message.id === payload);
+      const messageIndex = state.messages.findIndex((message) => message._id === payload);
       const updatedMessage = {
         ...state.messages[messageIndex],
         isLiked: false,

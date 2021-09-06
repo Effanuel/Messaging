@@ -8,4 +8,8 @@ export interface AuthState {
   error: string;
   loading: boolean;
   signedUpSuccessfully: boolean;
+  authenticated: boolean;
+  username: string;
+  id: string;
+  isAdmin: boolean;
 }

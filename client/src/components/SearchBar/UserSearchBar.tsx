@@ -2,8 +2,10 @@ import React from 'react';
 import {useHistory, useParams, useLocation} from 'react-router-dom';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {CircularProgress, makeStyles, TextField} from '@material-ui/core';
-import {useFirestoreConnect} from 'react-redux-firebase';
-import {useReduxSelector} from 'redux/helpers/selectorHelper';
+import {useDebouncedEffect} from 'redux/helpers/hooks';
+import {useDispatch, useSelector} from 'react-redux';
+import {getUsers} from 'redux/modules/user/userModule';
+import {AppState} from 'redux/models/state';
 
 const useStyles = makeStyles((theme) => ({
   clearIndicator: {color: 'white'},
@@ -19,74 +21,63 @@ export const UserSearchBar = React.memo(() => {
   const history = useHistory();
   const location = useLocation();
   const params = useParams();
+  const dispatch = useDispatch();
 
-  const [value, setValue] = React.useState('');
+  const [searchFilter, setSearchFilter] = React.useState('');
 
-  const {firestoreUsers, firestoreLoading, loggedInUserId} = useReduxSelector(
-    'firestoreUsers',
-    'firestoreLoading',
-    'loggedInUserId',
-  );
+  const users = useSelector((state: AppState) => state.user.users);
+  const loading = useSelector((state: AppState) => state.user.loading);
+  const userId = useSelector((state: AppState) => state.auth.id);
 
   React.useEffect(() => {
-    setValue('');
+    setSearchFilter('');
   }, [params]);
 
-  useFirestoreConnect({
-    collection: 'users',
-    where: [
-      ['username', '>=', value],
-      ['username', '<', value + 'z'],
-    ],
-    limit: 5,
-  });
+  useDebouncedEffect(() => void dispatch(getUsers({searchFilter})), 300, [dispatch, searchFilter]);
 
-  const onInputChange = React.useCallback((event: any, value: string) => {
-    setValue(value ?? '');
-  }, []);
+  const onInputChange = React.useCallback((event: any, value: string) => setSearchFilter(value ?? ''), []);
 
   const getOptionSelected = React.useCallback((option: Option, value: Option) => option.id === value.id, []);
 
   const getOptionLabel = React.useCallback((option: Option) => option?.name, []);
 
-  const options: Option[] = React.useMemo(() => {
-    return !!firestoreUsers && Object.keys(firestoreUsers).length
-      ? Object.keys(firestoreUsers)
-          ?.map((userId) => ({
-            id: userId,
-            name: firestoreUsers[userId]?.username,
-          }))
-          .filter((user) => user.id !== loggedInUserId)
-      : [];
-  }, [firestoreUsers, loggedInUserId]);
+  const options: Option[] = React.useMemo(
+    () =>
+      !!users?.length
+        ? users
+            .map((user) => ({id: user.id, name: user.username})) //
+            .filter((user) => user.id !== userId)
+        : [],
+    [users, userId],
+  );
 
   const renderInput = React.useCallback(
     (params) => (
       <TextField
         {...params}
         label="Search for users..."
-        value={value}
+        value={searchFilter}
         InputLabelProps={{style: {color: 'white', paddingLeft: 10}}}
         InputProps={{
           ...params.InputProps,
           style: {color: 'white', borderRadius: '5px', border: '1px solid #056c60', paddingLeft: 10},
           endAdornment: (
             <>
-              {firestoreLoading ? <CircularProgress color="inherit" size={10} /> : null}
+              {loading ? <CircularProgress color="inherit" size={10} /> : null}
               {params.InputProps.endAdornment}
             </>
           ),
         }}
       />
     ),
-    [firestoreLoading, value],
+    [loading, searchFilter],
   );
 
   const renderOption = React.useCallback(
     ({name, id}: Option) => {
       const redirectToProfile = () => {
         const currentProfileId = location.pathname.split('/')?.[2];
-        setValue('');
+        setSearchFilter('');
         if (currentProfileId !== id) {
           history.push(`/user/${name}/${id}`);
         }
@@ -109,9 +100,9 @@ export const UserSearchBar = React.memo(() => {
       getOptionLabel={getOptionLabel}
       renderOption={renderOption}
       options={options}
-      loading={firestoreLoading}
+      loading={loading}
       renderInput={renderInput}
-      inputValue={value}
+      inputValue={searchFilter}
       classes={{clearIndicator: classes.clearIndicator}}
     />
   );

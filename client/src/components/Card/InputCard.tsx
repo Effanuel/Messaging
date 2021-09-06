@@ -62,7 +62,7 @@ export const InputCard = React.memo(({username, onActionClick, onTextChange, val
         <TextField
           id="outlined-multiline-flexible"
           multiline
-          rowsMax={3}
+          maxRows={3}
           placeholder={'Enter a message'}
           className={classes.input}
           inputProps={{className: classes.input}}

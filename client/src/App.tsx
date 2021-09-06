@@ -1,10 +1,11 @@
 import React from 'react';
+import {useSelector} from 'react-redux';
 import {makeStyles} from '@material-ui/core/styles';
 import {Grid, LinearProgress} from '@material-ui/core';
-import {useReduxSelector} from 'redux/helpers/selectorHelper';
 import {AdminPanelLogo, UserSearchBar, TagSearchBar, SignedInLinks, SignedOutLinks} from 'components';
 import Content from 'container/Content';
 import {NavbarLogo} from 'components/Navbar/NavbarLogo';
+import {AppState} from 'redux/models/state';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,16 +30,18 @@ const useStyles = makeStyles((theme) => ({
 function App() {
   const classes = useStyles();
 
-  const {isLoggedIn, authLoading, profile} = useReduxSelector('isLoggedIn', 'authLoading', 'profile');
+  const authenticated = useSelector((state: AppState) => state.auth.authenticated);
+  const authLoading = useSelector((state: AppState) => state.auth.loading);
+  const isAdmin = useSelector((state: AppState) => state.auth.isAdmin);
 
   return (
     <div className={classes.root}>
-      <Grid container justify="center">
+      <Grid container justifyContent="center">
         <Grid item xs={2}>
           <div className={classes.section}>
             <NavbarLogo />
           </div>
-          {profile?.isAdmin === true ? (
+          {authenticated && isAdmin ? (
             <div className={classes.section}>
               <AdminPanelLogo />
             </div>
@@ -54,7 +57,7 @@ function App() {
           <div className={classes.test}>
             <UserSearchBar />
             <TagSearchBar />
-            {isLoggedIn ? <SignedInLinks /> : <SignedOutLinks />}
+            {authenticated ? <SignedInLinks /> : <SignedOutLinks />}
           </div>
         </Grid>
       </Grid>

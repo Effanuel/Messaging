@@ -1,17 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Provider, useSelector} from 'react-redux';
+import {Provider} from 'react-redux';
 import {BrowserRouter} from 'react-router-dom';
-import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
-import {isLoaded, ReactReduxFirebaseProvider} from 'react-redux-firebase';
-import {reactReduxFirebaseProps} from 'redux/store/firebaseSetup';
-import {AppState} from 'redux/models/state';
+import {createTheme, ThemeProvider} from '@material-ui/core/styles';
 import App from './App';
-import {store} from 'redux/store/store';
+import {createStore} from 'redux/store/store';
 import * as serviceWorker from './serviceWorker';
 import './index.css';
 
-const theme = createMuiTheme({
+const theme = createTheme({
   palette: {
     primary: {main: '#02b89b'},
     secondary: {main: '#1e1e1e'},
@@ -21,29 +18,14 @@ const theme = createMuiTheme({
   },
 });
 
-function AuthIsLoaded({children}: any) {
-  const auth = useSelector((state: AppState) => state.firebase.auth);
-  return !isLoaded(auth) ? (
-    <div style={{display: 'flex', color: 'white', justifyContent: 'center'}}>Loading Screen...</div>
-  ) : (
-    children
-  );
-}
-
 ReactDOM.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <ReactReduxFirebaseProvider {...reactReduxFirebaseProps}>
-        <AuthIsLoaded>
-          <BrowserRouter>
-            <ThemeProvider theme={theme}>
-              <App />
-            </ThemeProvider>
-          </BrowserRouter>
-        </AuthIsLoaded>
-      </ReactReduxFirebaseProvider>
-    </Provider>
-  </React.StrictMode>,
+  <Provider store={createStore()}>
+    <BrowserRouter>
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
+    </BrowserRouter>
+  </Provider>,
   document.getElementById('root'),
 );
 
